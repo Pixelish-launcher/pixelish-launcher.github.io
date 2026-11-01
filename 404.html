@@ -9,7 +9,7 @@
   // Old desktop download links (/downloads, /downloads/...) now live on GitHub Releases.
   // Runs in <head>, before anything renders.
   (function () {
-    var REL = 'https://github.com/Pixelish-launcher/dungeon-adventure/releases/tag/v1.2.1';
+    var REL = 'https://github.com/Pixelish-launcher/dungeon-adventure/releases/tag/v1.2.2';
     if (/^\/downloads(\/|$)/i.test(location.pathname)) {
       document.write('<meta http-equiv="refresh" content="0; url=' + REL + '"><style>body{visibility:hidden}</style>');
       location.replace(REL);

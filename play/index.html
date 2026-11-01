@@ -7,16 +7,17 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* Pixelify Sans draws its fi/fl ligatures like a capital A ('find' -> 'And'): keep letters separate */
 *{font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0}
 
 :root{--w4:12px;--w3:9px;--ink:#140e18;--gold:#f5d27a;--txt:#f3ead7}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#0b0a12;color:var(--txt);font-family:'Pixelify Sans',ui-monospace,Menlo,monospace;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-font-smoothing:none}
-button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;background:none;border:0}
-img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
+*{box-sizing:border-box;margin:0;padding:0;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b0a12;color:var(--txt);font-family:'Pixelify Sans',ui-monospace,Menlo,monospace;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-font-smoothing:none}
+button,input,textarea,select,option{font-family:inherit;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0}
+button{color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;background:none;border:0}
+img,canvas{image-rendering:pixelated;image-rendering:crisp-edges;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0}
 #cv{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hidden{display:none!important}
 .gold{color:#ffd84a}.muted{color:#b4a9c4}.small{font-size:13px}.center{text-align:center}
@@ -34,7 +35,7 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .pi{vertical-align:middle;image-rendering:pixelated}
 .ico{width:18px;height:18px;vertical-align:middle}.ico.s{width:16px;height:16px}.ico.big{width:36px;height:36px;flex:none}
 .key{display:inline-block;min-width:20px;padding:0 5px;background:#f3ead7;color:#1c1729;font-size:13px;box-shadow:0 2px 0 #8a7f6a,0 0 0 2px var(--ink);text-align:center;text-shadow:none}
-body.intitle .ui-ingame{display:none!important}
+body.intitle .ui-ingame,body.auth-open .ui-ingame{display:none!important}
 /* HUD */
 #hud{position:fixed;left:8px;top:8px;width:248px;pointer-events:none;padding:2px 3px 3px}
 #hudTop{display:flex;gap:6px;align-items:stretch}
@@ -266,6 +267,27 @@ body.touch #skinsKeys,body.touch #skinsBack .key{display:none}
 }
 @media (max-height:560px) and (min-width:761px){#skins{padding:4px}#skinsBox{height:100%;padding:4px 10px 8px}#skinsHead{margin-bottom:4px}#skinsTitle{font-size:20px}#skinsBack{padding:3px 10px}#skinBigWrap{max-width:96px}#skinStage{overflow:auto;gap:4px;padding:6px}#skinName{font-size:17px}#skinDesc{font-size:13px;min-height:0}#skinEquip{padding:5px 10px;font-size:16px}#skinsKeys{display:none}.skc canvas{width:72px;height:72px}.skc .ds{display:none}#skinGrid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
 @media (prefers-reduced-motion:reduce){#skinsBox,.skc,.skc.shake,#skinEquip.shake{animation:none;transition:none}.skc:hover{transform:none}}
+#auth{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;background:rgba(8,6,14,.82);padding:16px}
+#authBox{width:min(340px,94vw);padding:12px 14px 14px}
+#authKicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#f5d27a;margin-bottom:2px}
+#authTitle{font-size:26px;line-height:1.05;margin:0 0 4px;text-shadow:2px 2px 0 var(--ink)}
+#authLead{font-size:14px;margin:0 0 8px}
+#authTabs{display:flex;gap:6px;margin-bottom:4px}
+#authTabs .pbtn{flex:1;padding:6px 8px;font-size:15px}
+#auth label{display:block;font-size:13px;color:#b4a9c4;margin-top:8px}
+#auth input{display:block;width:100%;margin-top:3px;padding:7px 8px;font-size:16px;color:var(--txt);background:#120e18;border-style:solid;border-width:3px;border-color:#4a3f66;border-image:var(--bi-btn);outline:none;-webkit-user-select:text;user-select:text;touch-action:auto}
+#auth input:focus{border-color:#f5d27a}
+.authErr{color:#ff9a8a;font-size:13px;line-height:1.3;margin-top:3px}
+.authErr:empty{display:none}
+#authSubmit{width:100%;margin-top:10px;padding:8px;font-size:18px}
+#authOffline p{font-size:16px;line-height:1.35;margin:8px 0 12px}
+#authBusy{font-size:15px;margin:8px 0 0}
+#accountRow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+#accountLine{font-size:14px;color:#b4a9c4;margin:0;text-align:left}
+#accountLine b{color:#ffe9a0}
+#btnLogout{padding:4px 8px;font-size:14px;flex:none}
+#offlineNote{font-size:13px;color:#ffb060}
+#offlineBadge{position:fixed;left:8px;bottom:8px;z-index:36;padding:3px 8px;font-size:13px;color:#ffb060;background:#1a1408;box-shadow:0 0 0 3px var(--ink);pointer-events:none}
 #death{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(40,0,0,.55);z-index:35}
 #tut{position:fixed;top:8px;left:264px;width:min(340px,calc(100vw - 400px));z-index:32;pointer-events:none}
 #tutBox{pointer-events:auto;padding:3px 7px 5px;background:#1a1424;border-width:6px}
@@ -390,6 +412,7 @@ body.touch #toasts{bottom:250px}
   <button class="pbtn tbtn" id="btnTutorial">Tutorial<span class="tdone" id="tutBadge" hidden><span aria-hidden="true">✓ </span>Completed</span></button>
   <button class="pbtn tbtn" id="btnSkins">Skins</button>
   <button class="pbtn tbtn" id="btnHelp">How to play</button>
+  <div id="accountRow" class="hidden"><span id="accountLine">Signed in as <b id="accountName"></b><span id="offlineNote" class="hidden"> · Offline</span></span><button class="pbtn hidden" id="btnLogout" type="button">Log out</button></div>
   </nav>
   <div id="titleHelp" class="pf hidden"></div>
   </div>
@@ -413,9 +436,50 @@ body.touch #toasts{bottom:250px}
 </div></div>
 <div id="tut" class="hidden" role="dialog" aria-labelledby="tutTitle"><div id="tutBox" class="pf"><div id="tutStep"></div><h3 id="tutTitle"></h3><p id="tutText"></p><div id="tutKeys"></div><div id="tutActions"><button type="button" class="pbtn gold hidden" id="tutNext">Continue</button><button type="button" class="pbtn gold hidden" id="tutSkins">Open Skins</button><button type="button" class="pbtn" id="tutSkip">Skip tutorial</button></div></div></div>
 <div id="tutDone" class="hidden" role="dialog" aria-labelledby="tutDoneT"><div class="pf"><h2 id="tutDoneT">Tutorial complete</h2><p id="tutDoneP">You know the yard. The real world is bigger, and it is never the same twice.</p><button type="button" class="pbtn gold" id="tutGo">Enter the world</button></div></div>
+<div id="auth" class="hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle"><div id="authBox" class="pf">
+  <div id="authKicker">Dungeon Adventure</div>
+  <h2 id="authTitle">Sign in</h2>
+  <p id="authLead" class="muted">Use the same account as the website.</p>
+  <p id="authBusy">Checking your account…</p>
+  <div id="authOffline" class="hidden"><p>Connect to the internet to sign in.</p><button type="button" class="pbtn gold" id="authRetry">Retry</button></div>
+  <div id="authForm" class="hidden">
+    <div id="authTabs"><button type="button" class="pbtn gold" id="authTabIn">Sign in</button><button type="button" class="pbtn" id="authTabUp">Sign up</button></div>
+    <label for="authUser">Username<input id="authUser" name="username" autocomplete="username" maxlength="20" spellcheck="false"></label>
+    <div id="authUserErr" class="authErr"></div>
+    <label for="authPass">Password<input id="authPass" name="password" type="password" autocomplete="current-password" maxlength="128"></label>
+    <div id="authPassErr" class="authErr"></div>
+    <div id="authFormErr" class="authErr"></div>
+    <button type="button" class="pbtn gold" id="authSubmit">Sign in</button>
+  </div>
+</div></div>
+<div id="offlineBadge" class="hidden">Offline</div>
 <div id="fade"></div>
 <script>
 'use strict';
+// Pixelify Sans draws fi/fl as a broken capital A. Turn those ligatures off for every canvas string.
+(function () {
+  function ligaOff(ctx) {
+    try { if ('fontVariantLigatures' in ctx) ctx.fontVariantLigatures = 'none'; } catch (e) {}
+    try {
+      if (ctx.canvas && ctx.canvas.style) {
+        ctx.canvas.style.fontVariantLigatures = 'none';
+        ctx.canvas.style.fontFeatureSettings = '"liga" 0, "clig" 0';
+      }
+    } catch (e) {}
+    try { if (!('fontVariantLigatures' in ctx)) ctx.letterSpacing = '0.02px'; } catch (e) {}
+  }
+  const fill = CanvasRenderingContext2D.prototype.fillText;
+  const stroke = CanvasRenderingContext2D.prototype.strokeText;
+  CanvasRenderingContext2D.prototype.fillText = function () { ligaOff(this); return fill.apply(this, arguments); };
+  CanvasRenderingContext2D.prototype.strokeText = function () { ligaOff(this); return stroke.apply(this, arguments); };
+})();
+if (window.DAAccount) {
+  document.body.classList.add('auth-open');
+  const titleEl = document.getElementById('title');
+  if (titleEl) titleEl.classList.add('hidden');
+  const authEl = document.getElementById('auth');
+  if (authEl) authEl.classList.remove('hidden');
+}
 // ================= CORE UTILITIES =================
 const TILE = 16;
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -469,6 +533,9 @@ const Input = {
   end() { this.pressed = {}; this.vp = {}; }
 };
 addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+  if (document.body.classList.contains('auth-open')) return;
   if (!e.repeat) Input.pressed[e.code] = true; Input.down[e.code] = true;
   if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) e.preventDefault();
 });
@@ -4042,7 +4109,8 @@ function startGame(save) {
   } else { p.x = w.start.cx * 16 + 8; p.y = (w.start.cy + 3) * 16 + 10; p.hp = pMaxHp(p); }
   hellPlusLoad(save ? save.hp2 : null);
   UI.resetFog(); markExplored(); snapCam(); Game.state = 'play'; document.body.classList.remove('intitle');
-  if (!save) setTimeout(() => UI.intro(), 400); else UI.toast('Welcome back, adventurer!', 'gold');
+  clearTimeout(Game._introT);
+  if (!save) Game._introT = setTimeout(() => { if (Game.state === 'play') UI.intro(); }, 400); else UI.toast('Welcome back, adventurer!', 'gold');
   if (save && save.inHell && hellUnlockedNow()) { Game.overPos = { x: p.x, y: p.y }; enterHell(true, save.inHell); }
   saveGame();
 }
@@ -5459,7 +5527,12 @@ const UI = {
       html += `<h3>Supplies</h3><div class="items"><button class="item pbtn" data-a="potion">${ico('potion')} Potion ×${p.potions} <span class="muted small">(drink)</span></button><div class="item inset">${ico('torch')} Torch ×${p.torches}</div></div>`;
       const keys = RES_ORDER.filter(k => Game.inv[k] > 0); html += '<h3>Materials</h3>' + (keys.length ? '<div class="resgrid">' + keys.map(k => `<div class="res inset">${ico('r_' + k)}<span>${RES[k].n}</span><b>${Game.inv[k]}</b></div>`).join('') + '</div>' : '<p class="muted small">Chop wood, mine ore, and gather flowers and mushrooms!</p>');
     } else if (kind === 'map') { title = iconImg('ui_map', 26) + (Game.mode === 'over' ? 'World map' : esc(Game.cave.cave.name)); html = '<canvas id="bigmap"></canvas>' + (Game.mode !== 'over' ? (inHell() ? '<p class="muted small center">🟢 return portal · 😇 Angel Village · 😈 Satan\'s throne · ⛏️ hell cave · 🟣 Soul Merchant · 🟧 lava · black = unexplored</p>' : '') : '<p class="muted small center">💀 ancient cave · 🟡 cave · 🟥 village · ⛺ bandit camp · 🏛️ ancient temple · 👻 cursed village · 🗿 Earth Dungeon · ⭐ quest target</p>'); }
-    else if (kind === 'menu') { title = iconImg('ui_gear', 26) + 'Menu'; html = `<div class="menu"><button class="pbtn gold" data-a="menu" data-v="save">Save</button><button class="pbtn" data-a="menu" data-v="sound">${SFX.on ? 'Sound: on' : 'Sound: off'}</button><button class="pbtn" data-a="menu" data-v="help">How to play?</button><button class="pbtn" data-a="menu" data-v="title">Back to title</button></div><p class="muted small center">The game also saves on its own, in this browser. World code: ${Game.world.seed}</p>`; }
+    else if (kind === 'menu') {
+      title = iconImg('ui_gear', 26) + 'Menu';
+      const who = window.DAAccount && window.__DA_USER ? `<p class="muted small center">Signed in as <b class="gold">${esc(window.__DA_USER)}</b></p>${window.__DA_OFFLINE ? '<p class="muted small center">Offline</p>' : ''}` : '';
+      const out = window.DAAccount && window.__DA_USER ? '<button class="pbtn" data-a="menu" data-v="logout">Log out</button>' : '';
+      html = `<div class="menu">${who}<button class="pbtn gold" data-a="menu" data-v="save">Save</button><button class="pbtn" data-a="menu" data-v="sound">${SFX.on ? 'Sound: on' : 'Sound: off'}</button><button class="pbtn" data-a="menu" data-v="help">How to play?</button><button class="pbtn" data-a="menu" data-v="title">Back to title</button>${out}</div><p class="muted small center">The game also saves on its own, in this browser. World code: ${Game.world.seed}</p>`;
+    }
     else if (kind === 'help') { title = iconImg('ui_quest', 26) + 'How to play?'; html = HELP_HTML; }
     this.showPanel(kind, title, html); if (kind === 'map') this.drawBigMap();
   },
@@ -5496,7 +5569,7 @@ const UI = {
   menuAction(a) {
     if (a === 'save') { if (Game.tutorial) Game.tutorial.saved = true; saveGame(); this.toast(Game.tutorial ? '💾 Lesson saved. Your adventure save was left alone.' : '💾 Saved!'); this.closePanel(); }
     else if (a === 'sound') { SFX.on = !SFX.on; storeSet('realmquest_sound', SFX.on ? '1' : '0'); this.openPanel('menu'); }
-    else if (a === 'help') this.openPanel('help'); else if (a === 'title') { if (Game.tutorial) { this.toast('Skip the lesson, or finish it, before leaving.', 'warn'); this.closePanel(); return; } saveGame(); this.closePanel(); showTitle(); } else if (a === 'close') this.closePanel();
+    else if (a === 'help') this.openPanel('help'); else if (a === 'title') { if (Game.tutorial) { this.toast('Skip the lesson, or finish it, before leaving.', 'warn'); this.closePanel(); return; } saveGame(); this.closePanel(); showTitle(); } else if (a === 'logout') { AccountGate.logout(); } else if (a === 'close') this.closePanel();
   },
   drawBigMap() {
     const c = $('bigmap'); const box = $('panelBody'); const sz = Math.max(160, Math.min(box.clientWidth - 4, 520, innerHeight - 170)); const dpr = Game.dpr || 1;
@@ -5961,20 +6034,160 @@ const DATutorial = {
 };
 window.DATutorial = DATutorial;
 
+const AccountGate = {
+  mode: 'in',
+  continuePlay: null,
+  bind() {
+    $('authTabIn').addEventListener('click', () => this.setMode('in'));
+    $('authTabUp').addEventListener('click', () => this.setMode('up'));
+    $('authSubmit').addEventListener('click', () => this.submit());
+    $('authRetry').addEventListener('click', () => this.retry());
+    $('btnLogout').addEventListener('click', () => this.logout());
+    $('authPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.submit(); } });
+    $('authUser').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('authPass').focus(); } });
+  },
+  setMode(mode) {
+    this.mode = mode === 'up' ? 'up' : 'in';
+    $('authTitle').textContent = this.mode === 'up' ? 'Sign up' : 'Sign in';
+    $('authSubmit').textContent = this.mode === 'up' ? 'Create account' : 'Sign in';
+    $('authTabIn').classList.toggle('gold', this.mode === 'in');
+    $('authTabUp').classList.toggle('gold', this.mode === 'up');
+    $('authPass').autocomplete = this.mode === 'up' ? 'new-password' : 'current-password';
+    this.clearErrors();
+  },
+  clearErrors() {
+    $('authUserErr').textContent = '';
+    $('authPassErr').textContent = '';
+    $('authFormErr').textContent = '';
+  },
+  showError(res) {
+    this.clearErrors();
+    const msg = (res && res.error) || 'Something went wrong. Please try again.';
+    const field = res && res.field;
+    if (field === 'username') $('authUserErr').textContent = msg;
+    else if (field === 'password' || field === 'password2') $('authPassErr').textContent = msg;
+    else $('authFormErr').textContent = msg;
+  },
+  apply(res) {
+    const name = res && res.loggedIn ? (res.username || '') : '';
+    window.__DA_USER = name;
+    window.__DA_OFFLINE = !!(res && res.offline && res.loggedIn);
+    const on = !!(window.DAAccount && name);
+    $('accountRow').classList.toggle('hidden', !on);
+    $('accountName').textContent = name;
+    $('btnLogout').classList.toggle('hidden', !on);
+    $('offlineNote').classList.toggle('hidden', !window.__DA_OFFLINE);
+    this.syncBadge();
+  },
+  syncBadge() {
+    const show = !!(window.__DA_OFFLINE && $('auth').classList.contains('hidden'));
+    $('offlineBadge').classList.toggle('hidden', !show);
+  },
+  showBusy() {
+    $('title').classList.add('hidden');
+    document.body.classList.add('auth-open');
+    $('auth').classList.remove('hidden');
+    $('authBusy').classList.remove('hidden');
+    $('authOffline').classList.add('hidden');
+    $('authForm').classList.add('hidden');
+    Game.state = 'auth';
+    this.syncBadge();
+  },
+  showOffline() {
+    this.showBusy();
+    $('authBusy').classList.add('hidden');
+    $('authOffline').classList.remove('hidden');
+  },
+  showForm(mode) {
+    this.showBusy();
+    $('authBusy').classList.add('hidden');
+    $('authForm').classList.remove('hidden');
+    this.setMode(mode || this.mode);
+    try { $('authUser').focus(); } catch (e) {}
+  },
+  hide() {
+    $('auth').classList.add('hidden');
+    document.body.classList.remove('auth-open');
+    this.syncBadge();
+  },
+  async enter() {
+    this.showBusy();
+    let res;
+    try { res = await window.DAAccount.me(); }
+    catch (e) { res = { loggedIn: false, offline: true, hasToken: false }; }
+    this.apply(res);
+    if (res.loggedIn) { this.hide(); if (this.continuePlay) this.continuePlay(); return; }
+    if (res.offline && !res.hasToken) { this.showOffline(); return; }
+    this.showForm('in');
+  },
+  async retry() {
+    this.showBusy();
+    let res;
+    try { res = await window.DAAccount.me(); }
+    catch (e) { res = { loggedIn: false, offline: true, hasToken: false }; }
+    this.apply(res);
+    if (res.loggedIn) { this.hide(); if (this.continuePlay) this.continuePlay(); return; }
+    if (res.offline && !res.hasToken) { this.showOffline(); return; }
+    this.showForm('in');
+  },
+  async submit() {
+    if (!window.DAAccount) return;
+    const username = $('authUser').value.trim();
+    const password = $('authPass').value;
+    this.clearErrors();
+    if (!username || !password) { $('authFormErr').textContent = 'Please enter your username and password.'; return; }
+    const btn = $('authSubmit');
+    btn.disabled = true;
+    const prev = btn.textContent;
+    btn.textContent = 'One moment…';
+    let res;
+    try {
+      res = this.mode === 'up' ? await window.DAAccount.signup(username, password) : await window.DAAccount.login(username, password);
+    } catch (e) {
+      res = { ok: false, offline: true, error: 'Connect to the internet to sign in.' };
+    }
+    btn.disabled = false;
+    btn.textContent = prev;
+    if (!res || !res.ok) { this.showError(res); return; }
+    this.apply({ loggedIn: true, username: res.user && res.user.username, offline: false, hasToken: true });
+    this.hide();
+    if (this.continuePlay) this.continuePlay();
+  },
+  async logout() {
+    if (!window.DAAccount) return;
+    try { saveGame(); } catch (e) {}
+    if (Game.tutorial) Game.tutorial = null;
+    $('tut').classList.add('hidden'); $('tutDone').classList.add('hidden');
+    try { if (SkinMenu.isOpen()) SkinMenu.close(); } catch (e) {}
+    try { UI.closePanel(); } catch (e) {}
+    $('dialog').classList.add('hidden');
+    Game.p = null;
+    try { await window.DAAccount.logout(); } catch (e) {}
+    this.apply({ loggedIn: false, offline: false, hasToken: false });
+    this.showForm('in');
+    $('authUser').value = '';
+    $('authPass').value = '';
+  }
+};
+window.AccountGate = AccountGate;
+
 
 function frame(ts) {
   const dt = Math.min(0.05, Math.max(0, (ts - lastT) / 1000) || 0.016); lastT = ts; FRAME_DT = dt;
   try {
-    if (Game.state === 'title') {
-      titleT += dt; Game.time += dt; const w = Game.world; drawTitleHeroes(titleT);
-      Game.cam.x = (w.w * 16) / 2 + Math.cos(titleT * 0.05) * 700 - Game.W / Game.S / 2; Game.cam.y = (w.h * 16) / 2 + Math.sin(titleT * 0.04) * 600 - Game.H / Game.S / 2; clampCam(); updParts(dt);
-    } else { uiKeys(); if (Game.state === 'play') update(dt); else updParts(dt); }
-    if (Game.tutorial) tutorialTick();
-    render(); if (Game.state !== 'title') UI.hud();
+    if (Game.state !== 'auth') {
+      if (Game.state === 'title') {
+        titleT += dt; Game.time += dt; const w = Game.world; drawTitleHeroes(titleT);
+        Game.cam.x = (w.w * 16) / 2 + Math.cos(titleT * 0.05) * 700 - Game.W / Game.S / 2; Game.cam.y = (w.h * 16) / 2 + Math.sin(titleT * 0.04) * 600 - Game.H / Game.S / 2; clampCam(); updParts(dt);
+      } else { uiKeys(); if (Game.state === 'play') update(dt); else updParts(dt); }
+      if (Game.tutorial) tutorialTick();
+      render(); if (Game.state !== 'title') UI.hud();
+    }
   } catch (err) { console.error(err); }
   Input.end(); requestAnimationFrame(frame);
 }
 function showTitle() {
+  clearTimeout(Game._introT);
   Game.state = 'title'; document.body.classList.add('intitle'); ['death', 'dialog', 'panel', 'tut', 'tutDone'].forEach(id => $(id).classList.add('hidden')); UI.hideBoss();
   const ban = $('banner'); if (ban) ban.classList.remove('show');
   Game.mode = 'over'; Game.cave = null; Game.enemies = []; Game.shots = []; Game.pickups = []; Game.p = null;
@@ -6005,8 +6218,10 @@ function boot() {
   addEventListener('pagehide', () => saveGame());
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('touchmove', e => { if (!e.target.closest('#panelBody') && !e.target.closest('#titleHelp') && !e.target.closest('#skinGrid') && !e.target.closest('#skinStage') && !e.target.closest('#dlgText')) e.preventDefault(); }, { passive: false });
-  TitleMenu.init(); SkinMenu.init(); DATutorial.bind(); window.__G = Game;
-  if (!save && !DATutorial.isDone()) beginTutorial({ replay: false }); else showTitle();
+  TitleMenu.init(); SkinMenu.init(); DATutorial.bind(); AccountGate.bind(); window.__G = Game;
+  const goPlay = () => { if (!loadSave() && !DATutorial.isDone()) beginTutorial({ replay: false }); else showTitle(); };
+  AccountGate.continuePlay = goPlay;
+  if (window.DAAccount) AccountGate.enter(); else goPlay();
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
 
@@ -6025,7 +6240,7 @@ const TitleMenu = {
   items() {
     const c = $('confirmNew');
     if (c.classList.contains('show')) return [$('btnYes'), $('btnNo')];
-    return ['btnContinue', 'btnNew', 'btnTutorial', 'btnSkins', 'btnHelp'].map($).filter(b => !b.classList.contains('hidden'));
+    return ['btnContinue', 'btnNew', 'btnTutorial', 'btnSkins', 'btnHelp', 'btnLogout'].map($).filter(b => b && !b.classList.contains('hidden'));
   },
   setSel(i, focus = true) {
     const it = this.items(); document.querySelectorAll('#titleBox .sel').forEach(b => b.classList.remove('sel'));
