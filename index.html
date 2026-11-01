@@ -18,8 +18,8 @@
 -->
 <script>
 window.PIXELISH_CONFIG = {
-  windowsDownloadUrl: "https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.0/Dungeon-Adventure-Setup-1.2.0.exe",   // <-- Windows installer link (empty = "Coming soon")
-  windowsVersion: "1.2.0",       // optional, e.g. "1.0.0"
+  windowsDownloadUrl: "https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.1/Dungeon-Adventure-Setup-1.2.1.exe",   // <-- Windows installer link (empty = "Coming soon")
+  windowsVersion: "1.2.1",       // optional, e.g. "1.0.0"
   windowsSize: "116 MB"         // optional, shown on the button
 };
 </script>
@@ -27,6 +27,9 @@ window.PIXELISH_CONFIG = {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Pixelify Sans draws its fi/fl ligatures like a capital A ('find' -> 'And'): keep letters separate */
+*{font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0}
+
 :root{--ink:#140e18;--bg:#0b0a12;--panel:#1d172a;--panel2:#2a2140;--gold:#ffd84a;--gold2:#f5a623;--goldd:#8a6420;--txt:#f3ead7;--muted:#b4a9c4;--green:#4fa84a;--green2:#2f6b34;--purple:#4a3f66}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -215,11 +218,11 @@ dialog#authDlg::backdrop{background:rgba(5,4,10,.82)}
         <h2>Desktop app</h2>
         <p>Download Dungeon Adventure and play in its own window, no browser needed – same game, same menu, tutorial included.</p>
         <ul class="alt">
-          <li><a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.0/Dungeon-Adventure-1.2.0-Portable.exe">Portable version (no install)</a> <span>Windows · 105 MB</span></li>
-          <li><a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.0/Dungeon-Adventure-1.2.0.AppImage">Linux (AppImage)</a> <span>120 MB</span></li>
+          <li><a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.1/Dungeon-Adventure-1.2.1-Portable.exe">Portable version (no install)</a> <span>Windows · 105 MB</span></li>
+          <li><a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/download/v1.2.1/Dungeon-Adventure-1.2.1.AppImage">Linux (AppImage)</a> <span>120 MB</span></li>
         </ul>
         <div class="warn"><b>⚠ Windows warning:</b> the app isn’t digitally signed yet, so Windows SmartScreen may show a “Windows protected your PC” message. Click <b>More info</b>, then <b>Run anyway</b>.</div>
-        <p class="note">Version 1.2.0 · <a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/tag/v1.2.0" target="_blank" rel="noopener">Release notes</a> · <a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases" target="_blank" rel="noopener">All releases on GitHub</a><br>No Mac version yet – on a Mac, play in your browser.</p>
+        <p class="note">Version 1.2.1 · <a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases/tag/v1.2.1" target="_blank" rel="noopener">Release notes</a> · <a href="https://github.com/Pixelish-launcher/dungeon-adventure/releases" target="_blank" rel="noopener">All releases on GitHub</a><br>No Mac version yet – on a Mac, play in your browser.</p>
       </div>
       <div class="side">
         <a class="btn blue" id="dlBtn" data-download href="#download"><svg class="ico" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 1h3v3H1zM5 1h2v3H5zM1 5h3v2H1zM5 5h2v2H5z"/></svg><span class="lbl"><span data-dl-title>Download for Windows</span><small data-dl-sub>Coming soon</small></span><span class="badge" data-dl-badge>Coming soon</span></a>

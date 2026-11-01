@@ -9,6 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Pixelify Sans draws its fi/fl ligatures like a capital A ('find' -> 'And'): keep letters separate */
+*{font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0}
+
 :root{--w4:12px;--w3:9px;--ink:#140e18;--gold:#f5d27a;--txt:#f3ead7}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#0b0a12;color:var(--txt);font-family:'Pixelify Sans',ui-monospace,Menlo,monospace;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-font-smoothing:none}
@@ -264,13 +267,15 @@ body.touch #skinsKeys,body.touch #skinsBack .key{display:none}
 @media (max-height:560px) and (min-width:761px){#skins{padding:4px}#skinsBox{height:100%;padding:4px 10px 8px}#skinsHead{margin-bottom:4px}#skinsTitle{font-size:20px}#skinsBack{padding:3px 10px}#skinBigWrap{max-width:96px}#skinStage{overflow:auto;gap:4px;padding:6px}#skinName{font-size:17px}#skinDesc{font-size:13px;min-height:0}#skinEquip{padding:5px 10px;font-size:16px}#skinsKeys{display:none}.skc canvas{width:72px;height:72px}.skc .ds{display:none}#skinGrid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}}
 @media (prefers-reduced-motion:reduce){#skinsBox,.skc,.skc.shake,#skinEquip.shake{animation:none;transition:none}.skc:hover{transform:none}}
 #death{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(40,0,0,.55);z-index:35}
-#tut{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(540px,94vw);z-index:32;pointer-events:none}
-#tutBox{pointer-events:auto;padding:8px 12px 10px;background:#1a1424}
-#tutStep{font-size:13px;color:#ffd84a}#tutTitle{font-size:20px;margin:1px 0 4px}#tutText{font-size:15px;line-height:1.35}#tutKeys{margin-top:6px;color:#d6cbe4;font-size:14px;line-height:1.35}
-#tutActions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}#tutActions .pbtn{padding:6px 12px;font-size:15px}
-#tutDone{position:fixed;inset:0;z-index:46;display:flex;align-items:center;justify-content:center;background:rgba(8,6,14,.55);padding:16px}
-#tutDone .pf{padding:16px 18px;max-width:440px;text-align:center}#tutDone p{margin:8px 0 12px}
-body.touch #tut{bottom:118px}
+#tut{position:fixed;top:8px;left:264px;width:min(340px,calc(100vw - 400px));z-index:32;pointer-events:none}
+#tutBox{pointer-events:auto;padding:3px 7px 5px;background:#1a1424;border-width:6px}
+#tutStep{font-size:10px;color:#ffd84a;line-height:1.1}#tutTitle{font-size:14px;margin:0 0 2px;line-height:1.15}#tutText{font-size:12px;line-height:1.25}#tutKeys{margin-top:2px;color:#d6cbe4;font-size:11px;line-height:1.25}#tutKeys:empty{display:none}
+#tutActions{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}#tutActions .pbtn{padding:2px 7px;font-size:12px;line-height:1.2}
+#tutDone{position:fixed;inset:0;z-index:46;display:flex;align-items:center;justify-content:center;background:rgba(8,6,14,.4);padding:10px}
+#tutDone .pf{padding:7px 10px;max-width:250px;text-align:center;border-width:6px}#tutDone h2{font-size:16px;margin:0;line-height:1.15}#tutDone p{margin:4px 0 7px;font-size:12px;line-height:1.25}#tutDone .pbtn{padding:3px 8px;font-size:12px}
+@media (max-width:760px){#tut{top:auto;bottom:124px;left:8px;transform:none;width:min(220px,calc(100vw - 118px))}}
+body.touch #tut{top:auto;bottom:128px;left:8px;transform:none;width:min(210px,calc(100vw - 122px))}
+body.touch #tutActions .pbtn,body.touch #tutDone .pbtn{padding:7px 12px;font-size:14px;min-height:36px}
 #death .pf{padding:16px 22px;text-align:center}
 #death h2{font-size:32px;color:#ff8a8a;margin-bottom:6px;text-shadow:3px 3px 0 var(--ink)}
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .25s steps(5);z-index:50}
@@ -406,7 +411,7 @@ body.touch #toasts{bottom:250px}
   </div>
   <div id="skinsKeys"><span class="key">←↑↓→</span> select · <span class="key">Enter</span> equip · <span class="key">Esc</span> back</div>
 </div></div>
-<div id="tut" class="hidden" role="dialog" aria-labelledby="tutTitle"><div id="tutBox" class="pf"><div id="tutStep"></div><h3 id="tutTitle"></h3><p id="tutText"></p><div id="tutKeys"></div><div id="tutActions"><button type="button" class="pbtn gold hidden" id="tutSkins">Open Skins</button><button type="button" class="pbtn" id="tutSkip">Skip tutorial</button></div></div></div>
+<div id="tut" class="hidden" role="dialog" aria-labelledby="tutTitle"><div id="tutBox" class="pf"><div id="tutStep"></div><h3 id="tutTitle"></h3><p id="tutText"></p><div id="tutKeys"></div><div id="tutActions"><button type="button" class="pbtn gold hidden" id="tutNext">Continue</button><button type="button" class="pbtn gold hidden" id="tutSkins">Open Skins</button><button type="button" class="pbtn" id="tutSkip">Skip tutorial</button></div></div></div>
 <div id="tutDone" class="hidden" role="dialog" aria-labelledby="tutDoneT"><div class="pf"><h2 id="tutDoneT">Tutorial complete</h2><p id="tutDoneP">You know the yard. The real world is bigger, and it is never the same twice.</p><button type="button" class="pbtn gold" id="tutGo">Enter the world</button></div></div>
 <div id="fade"></div>
 <script>
@@ -5865,7 +5870,8 @@ function tutorialSteps() {
     { id: 'save', title: 'Save', text: 'Open the menu again and press Save. The game also saves on its own. This lesson does not write over your adventure.', keys: keys('Esc, then Save', 'the gear button, then Save'), done: t => t.saved },
     { id: 'skins', title: 'Skins', text: 'Outfits are chosen on the title screen, before a world starts. Open the Skins menu, look around, then press Back. Locked skins say Coming soon.', keys: 'The Skins button below, then Back or Esc', done: t => t.skinsClosed },
     { id: 'enter', title: 'Enter a cave', text: 'The dark mouth ahead is a cave. Stand at it and go in, or walk up into the mouth. That is how you change places.', keys: keys('E or Enter, or walk up into it', 'the talk button, or tap the cave'), done: t => t.entered },
-    { id: 'exit', title: 'Climb back out', text: 'Stand on the cave entrance inside and climb out. In the real game that exit returns you to the surface, right where you went in.', keys: keys('E or Enter', 'the talk button'), done: t => t.leftCave }
+    { id: 'exit', title: 'Climb back out', text: 'Stand on the cave entrance inside and climb out. In the real game that exit returns you to the surface, right where you went in.', keys: keys('E or Enter', 'the talk button'), done: t => t.leftCave },
+    { id: 'hell', title: 'One more thing', info: true, text: 'One more thing: the only way to get to Hell is to find an ancient temple, where you have a chance of finding the Earth\'s Core. It will lead you to a big boss fight, and if you beat it, you can go to Hell.', keys: '', done: t => t.infoOk }
   ];
 }
 function tutorialShow() {
@@ -5875,8 +5881,9 @@ function tutorialShow() {
   $('tutStep').textContent = (T.i + 1) + ' / ' + T.steps.length;
   $('tutTitle').textContent = step.title;
   $('tutText').textContent = step.text;
-  $('tutKeys').textContent = step.keys;
+  $('tutKeys').textContent = step.keys || '';
   $('tutSkins').classList.toggle('hidden', step.id !== 'skins');
+  $('tutNext').classList.toggle('hidden', !step.info);
 }
 function tutorialTick() {
   const T = Game.tutorial; if (!T || T.doneScreen) return;
@@ -5949,6 +5956,7 @@ const DATutorial = {
     $('tutSkip').addEventListener('click', () => { if (!Game.tutorial) return; const into = !Game.tutorial.replay; endTutorial(into); });
     $('tutGo').addEventListener('click', () => { if (!Game.tutorial) return; endTutorial(!Game.tutorial.replay); });
     $('tutSkins').addEventListener('click', () => { SFX.play('ui'); SkinMenu.open(); });
+    $('tutNext').addEventListener('click', () => { if (Game.tutorial) Game.tutorial.infoOk = true; });
   }
 };
 window.DATutorial = DATutorial;
