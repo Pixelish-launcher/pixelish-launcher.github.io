@@ -1,5 +1,5 @@
 // Pixelish Launcher – account UI (Register / Log in / Log out).
-// Talks to the Netlify API (/api/me, /api/auth/{signup,login,logout}) with a signed session token
+// Talks to the account API (/api/me, /api/auth/{signup,login,logout}) with a signed session token
 // kept in localStorage and sent as "Authorization: Bearer <token>". Exposes window.PixelishAuth.
 (function () {
   var state = { user: null };
@@ -9,7 +9,14 @@
   var form = $('#authForm', dlg), err = $('#authErr', dlg), submit = $('#authSubmit', dlg);
   var uIn = $('#authUser', dlg), pIn = $('#authPass', dlg), p2Wrap = $('#authPass2Wrap', dlg), p2In = $('#authPass2', dlg);
   var mode = 'login';
-  var API = window.PIXELISH_API || 'https://pixelish-launcher.netlify.app';
+  var API = window.PIXELISH_API || 'https://pixelish-launcher-accounts.knoel99-morcik.workers.dev';
+  // Optional override from /api-config.json (same origin); ignore failures (offline/cached).
+  fetch('/api-config.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (cfg) {
+    if (cfg && typeof cfg.apiBase === 'string' && cfg.apiBase.indexOf('https://') === 0) {
+      API = window.PIXELISH_API || cfg.apiBase.replace(/\/+$/, '');
+      try { refresh(); } catch (e) {}
+    }
+  }).catch(function () {});
   var TOKEN_KEY = 'pl_session_token';
   function getToken() { try { return localStorage.getItem(TOKEN_KEY); } catch (e) { return null; } }
   function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
