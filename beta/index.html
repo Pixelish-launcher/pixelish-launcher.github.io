@@ -4078,9 +4078,7 @@ function enterCave(cv) {
     if (cv.kind === 'dungeon') dungeonEnter(C);
     if (cv.boss && Game.cleared[cv.id]) { const r = C.bossRoom; Game.portal = { x: r.cx * 16 + 8, y: r.cy * 16 + 8 }; }
     let sx = C.ent.x, sy = C.ent.y - 1; if (SOLID_G[C.ground[sy * C.w + sx]]) sy = C.ent.y; p.x = sx * 16 + 8; p.y = sy * 16 + 12; p.dir = 'up'; snapCam();
-    UI.banner(cv.name, cv.kind === 'temple' ? '🏛️ Ancient temple · Danger: ' + '★'.repeat(Math.min(5, Math.ceil(cv.lvl / 2))) : cv.kind === 'dungeon' ? '🗿 Defeat the Earth Servants!' : (cv.boss ? '💀 Ancient cave · ' : '') + 'Danger: ' + '★'.repeat(Math.min(5, Math.ceil(cv.lvl / 2))) + ' · ' + BIOMES[cv.biome].name);
-    if (cv.kind === 'temple' && Game.hintTemple) setTimeout(() => UI.toast(cv.core && !Game.coreTaken[cv.id] ? '🟤 An Earth Core sits on this temple\'s altar!' : cv.core ? '🟤 You already took this temple\'s Earth Core.' : '🗿 This temple has no Earth Core, only a gold idol.', 'quest'), 1800);
-    if (cv.kind === 'temple' && !Game.hintTemple) { Game.hintTemple = 1; setTimeout(() => UI.toast('💡 Ancient temple: avoid the spike traps, and look for cracked walls — a pickaxe can break through them!', 'quest'), 1800); }
+    if (cv.kind === 'temple') Game.hintTemple = 1;
     Game.state = 'play'; saveGame();
     if (!Game.hintCave) { Game.hintCave = 1; setTimeout(() => UI.toast('💡 It is dark! Place a torch: 🔥 button or T. Monsters do not come near torches.', 'quest'), 1500); }
   });
@@ -4159,7 +4157,7 @@ function startGame(save) {
 }
 function markExplored() {
   const p = Game.p, R = 10;
-  if (Game.mode === 'over') { const w = Game.world, cx = Math.floor(p.x / 16), cy = Math.floor(p.y / 16); for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) { if (x < 0 || y < 0 || x >= w.w || y >= w.h || (x - cx) ** 2 + (y - cy) ** 2 > R * R) continue; const i = y * w.w + x; if (!Game.explored[i]) { Game.explored[i] = 1; UI.fogClear(x, y); } } for (const c of w.caves) if (!c.kind && !Game.knownCaves[c.id] && Math.hypot(c.tx - cx, c.ty - cy) < R) { Game.knownCaves[c.id] = true; UI.toast('🕳️ You found a new cave: ' + c.name, 'quest'); }
+  if (Game.mode === 'over') { const w = Game.world, cx = Math.floor(p.x / 16), cy = Math.floor(p.y / 16); for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) { if (x < 0 || y < 0 || x >= w.w || y >= w.h || (x - cx) ** 2 + (y - cy) ** 2 > R * R) continue; const i = y * w.w + x; if (!Game.explored[i]) { Game.explored[i] = 1; UI.fogClear(x, y); } } for (const c of w.caves) if (!c.kind && !Game.knownCaves[c.id] && Math.hypot(c.tx - cx, c.ty - cy) < R) { Game.knownCaves[c.id] = true; }
     for (const s of w.structs) if (!Game.knownStructs[s.id] && Math.hypot(s.tx - cx, s.ty - cy) < R + s.r * 0.5) { Game.knownStructs[s.id] = true; if (s.cv) Game.knownCaves[s.cv.id] = true; } }
   else { const C = Game.cave, cx = Math.floor(p.x / 16), cy = Math.floor(p.y / 16), r = inHell() ? 10 : Game.specials.lampas ? 9 : 6; for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) if (x >= 0 && y >= 0 && x < C.w && y < C.h) C.explored[y * C.w + x] = 1; }
 }
@@ -4190,11 +4188,11 @@ function update(dt) {
   Game.exploreT -= dt; if (Game.exploreT <= 0) { Game.exploreT = 0.3; markExplored(); }
   if (Game.mode === 'over') {
     const tx2 = Math.floor(p.x / 16), ty2 = Math.floor(p.y / 16); const v = nearVillage(tx2, ty2, 15);
-    if (v !== Game.curVillage) { Game.curVillage = v; if (v) { Game.lastVillage = v.id; UI.banner(v.name, 'Village of the ' + CULTURES[v.culture].people + ' · ' + BIOMES[v.biome].icon + ' ' + BIOMES[v.biome].name); saveGame(); } }
+    if (v !== Game.curVillage) { Game.curVillage = v; if (v) { Game.lastVillage = v.id; saveGame(); } }
     const st = v ? null : nearStruct(tx2, ty2, -1); if (st !== Game.curStruct) { Game.curStruct = st; if (st) Game.curBiome = Game.world.biome[ty2 * Game.world.w + tx2]; }
     { let hk = 0; for (const s of Game.world.structs) { if (s.type !== 'haunted') continue; const d = Math.hypot(s.tx - tx2, s.ty - ty2); let k = clamp(1 - (d - s.r * 0.75) / (s.r * 0.6), 0, 1); if (structCleared(s)) k *= 0.3; hk = Math.max(hk, k); } Game.hauntK += (hk - Game.hauntK) * Math.min(1, dt * 1.5); }
     const b = Game.world.biome[ty2 * Game.world.w + tx2];
-    if (!v && !st) { if (b !== Game.curBiome) { Game.biomeT += dt; if (Game.biomeT > 1.2) { Game.curBiome = b; Game.biomeT = 0; if (!Game.biomeShown[b] || Game.time - Game.biomeShown[b] > 90) { Game.biomeShown[b] = Game.time; UI.banner(BIOMES[b].icon + ' ' + BIOMES[b].name, ''); } } } else Game.biomeT = 0; }
+    if (!v && !st) { if (b !== Game.curBiome) { Game.biomeT += dt; if (Game.biomeT > 1.2) { Game.curBiome = b; Game.biomeT = 0; if (!Game.biomeShown[b] || Game.time - Game.biomeShown[b] > 90) Game.biomeShown[b] = Game.time; } } else Game.biomeT = 0; }
     const tc = BIOMES[b].tint; for (let i = 0; i < 4; i++) Game.tintC[i] += (tc[i] - Game.tintC[i]) * Math.min(1, dt * 1.5);
   }
   Game.interact = findInteract();
@@ -4585,8 +4583,7 @@ function enterHell(direct, pos) {
     Game.enemies = []; Game.shots = []; Game.pickups = []; Game.hazards = []; Game.boss = null; Game.portal = null; p.goto = null; UI.hideBoss();
     if (pos && !boxHit(C, pos.x, pos.y, p.hw, p.hh)) { p.x = pos.x; p.y = pos.y; } else { p.x = C.ent.x * 16 + 8; p.y = (C.ent.y + 2) * 16 + 10; }
     p.dir = 'down'; snapCam(); Game.state = 'play'; Game.hellBiome = -1; Game.spawnT = 3;
-    if (!direct) { UI.banner('🔥 Hell', 'A new dimension · Lava burns, and the enemies are cruel!'); Game.shake = 6; SFX.play('boss'); }
-    if (Game.cave.lostGate && !Game.lostHint) { Game.lostHint = 1; setTimeout(() => UI.toast('A soul gate stands east of this platform. It leads to the Land of the Lost Souls.', 'quest'), 7000); }
+    if (!direct) { Game.shake = 6; SFX.play('boss'); }
     if (!Game.hellVisited) { Game.hellVisited = 1; setTimeout(() => UI.toast('💡 In Hell you can walk through lava, but it burns! The return portal is where you arrived. Monsters do not come near the braziers.', 'quest'), 2200); }
     if (!Game.hp2Intro) { Game.hp2Intro = 1; setTimeout(() => UI.toast('😇 The paved road from the portal leads to Angel Village — you are safe there, and the Angel Craftsman forges hell gear!', 'quest'), 5200); }
     saveGame();
@@ -4638,7 +4635,7 @@ function enterLost(direct, pos) {
     });
     if (pos && !boxHit(C, pos.x, pos.y, p.hw, p.hh, true)) { p.x = pos.x; p.y = pos.y; } else { p.x = C.ent.x * 16 + 8; p.y = (C.ent.y + 1) * 16 + 10; }
     p.dir = 'down'; snapCam(); Game.state = 'play'; Game.spawnT = 2;
-    if (!direct) UI.banner('👻 The Land of the Lost Souls', 'God Goblins walk the lava. Press R to mount one.');
+    if (!direct) { Game.shake = 4; SFX.play('portal'); }
     saveGame();
   };
   if (direct) go(); else { SFX.play('portal'); const f = $('fade'); f.classList.add('hell'); transition(() => { f.classList.remove('hell'); go(); }); }
@@ -4722,7 +4719,7 @@ function hellTick(dt) {
   Game.ventT = (Game.ventT || 0) - dt;
   if (Game.ventT <= 0) { Game.ventT = 0.7; const tx = Math.floor(p.x / 16), ty = Math.floor(p.y / 16); for (let y = ty - 9; y <= ty + 9; y++) for (let x = tx - 12; x <= tx + 12; x++) { if (x < 0 || y < 0 || x >= C.w || y >= C.h || C.obj[y * C.w + x] !== O.HVENT) continue; if (hash2(x, y, Math.floor(Game.time / 3.5)) < 0.22) addHazard(x * 16 + 8, y * 16 + 10, 20, 0.9, 14, 'fire'); } }
   // biome banner
-  const b = hellBiomeAt(C, p.x, p.y); if (Game.hzone > 0) { Game.hellBiome = b; Game.hellBiomeT = 0; } else if (b !== Game.hellBiome) { Game.hellBiomeT = (Game.hellBiomeT || 0) + dt; if (Game.hellBiomeT > 1) { Game.hellBiome = b; Game.hellBiomeT = 0; const B = HELL_BIOMES[b]; UI.banner(B.icon + ' ' + B.name, 'Hell'); } } else Game.hellBiomeT = 0;
+  const b = hellBiomeAt(C, p.x, p.y); if (Game.hzone > 0) { Game.hellBiome = b; Game.hellBiomeT = 0; } else if (b !== Game.hellBiome) { Game.hellBiomeT = (Game.hellBiomeT || 0) + dt; if (Game.hellBiomeT > 1) { Game.hellBiome = b; Game.hellBiomeT = 0; } } else Game.hellBiomeT = 0;
   hellPlusTick(dt);
 }
 function burnHit(d, lava) {
@@ -4957,9 +4954,9 @@ function hellPlusTick(dt) {
   updSoulFx(dt);
   const z = hellZoneAt(C, p.x, p.y - 4);
   if (z !== Game.hzone) { Game.hzone = z;
-    if (z === 1) { UI.banner('😇 ' + C.village.name, 'A safe haven · No demon can harm you here'); if (!Game.villageHint) { Game.villageHint = 1; setTimeout(() => UI.toast('😇 The angels\' village: you heal here, and Uriel, the Angel Craftsman, forges from hell ore for free!', 'quest'), 1500); } }
-    else if (z === 2) { Game.arenaKnown = 1; UI.banner('😈 Satan\'s Throne Room', Game.satanDefeated ? 'The throne is empty... but Satan can be challenged again.' : 'The Lord of Hell awaits you...'); }
-    else if (z >= 10) { const hc = C.hcaves[z - 10]; if (hc) { Game.hcaveSeen = Game.hcaveSeen || {}; Game.hcaveSeen[z] = 1; UI.banner('⛏️ ' + hc.name, 'Hell cave · Fire Powder, Hellrock — and, if you are lucky, Fire Titanium'); } }
+    if (z === 1) { if (!Game.villageHint) Game.villageHint = 1; }
+    else if (z === 2) Game.arenaKnown = 1;
+    else if (z >= 10) { const hc = C.hcaves[z - 10]; if (hc) { Game.hcaveSeen = Game.hcaveSeen || {}; Game.hcaveSeen[z] = 1; } }
   }
   Game.hellDarkK += ((z >= 10 ? 1 : z === 1 ? -0.7 : 0) - (Game.hellDarkK || 0)) * Math.min(1, dt * 2);
   // ---- the holy village: no enemies, no enemy fire, wounds heal ----
