@@ -24,9 +24,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Pixelify Sans draws its fi/fl ligatures like a capital A ('find' -> 'And'): keep letters separate */
-*{font-variant-ligatures:none;font-feature-settings:'liga' 0,'clig' 0}
-
 :root{--w4:12px;--w3:9px;--ink:#140e18;--gold:#f5d27a;--txt:#f3ead7}
 *{box-sizing:border-box;margin:0;padding:0;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0}
 html,body{width:100%;height:100%;overflow:hidden;background:#0b0a12;color:var(--txt);font-family:'Pixelify Sans',ui-monospace,Menlo,monospace;font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-font-smoothing:none}
@@ -122,6 +119,7 @@ body.touch #touch{display:block}body.touch.nopl #touch{display:none}
 @keyframes glow{to{filter:brightness(1.5) drop-shadow(0 0 4px #ffd84a)}}
 #bPot{right:98px;bottom:90px;width:50px;height:50px;background-image:var(--rb-s)}#bPot img,#bTorch img{width:26px;height:26px}
 #bTorch{right:28px;bottom:184px;width:50px;height:50px;background-image:var(--rb-s)}
+#bMount{right:168px;bottom:22px;width:52px;height:52px;font-size:13px;font-weight:700;color:#ffe9a0;text-shadow:1px 1px 0 #140e18}
 .badge{position:absolute;right:-4px;bottom:-4px;font-size:12px;font-weight:700;background:#f3ead7;color:#1c1729;padding:0 4px;box-shadow:0 0 0 2px var(--ink)}
 #talkLbl{position:fixed;right:84px;bottom:148px;max-width:46vw;padding:1px 8px;font-size:13px;font-weight:600;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:2px 2px 0 var(--ink)}
 #talkLbl:empty{display:none}
@@ -203,8 +201,6 @@ body.touch .num{display:none}
 #title .tbtn:hover,#title .tbtn.sel{filter:brightness(1.18) saturate(1.1);transform:translateY(-2px)}
 #title .tbtn:active{transform:translateY(1px);filter:brightness(.95)}
 #title .tbtn:focus{outline:none}
-.tdone{display:inline-block;margin:-6px 0 -6px 10px;padding:2px 6px 1px;font-size:12px;line-height:1.2;letter-spacing:0;vertical-align:3px;color:#e4ffd8;text-shadow:1px 1px 0 #0c2410;background:#2f7a3a;border:2px solid #143a1c;box-shadow:inset -2px -2px 0 #22592b,inset 2px 2px 0 #4aa356}.tdone[hidden]{display:none}
-@media (max-width:380px){.tdone{font-size:11px;margin-left:6px;padding:1px 4px}}
 #title .tbtn::before,#title .tbtn::after{content:'';position:absolute;top:50%;width:0;height:0;border:8px solid transparent;margin-top:-8px;opacity:0;pointer-events:none}
 #title .tbtn::before{left:12px;border-left:10px solid #ffd84a;filter:drop-shadow(2px 2px 0 #140e18)}
 #title .tbtn::after{right:12px;border-right:10px solid #ffd84a;filter:drop-shadow(-2px 2px 0 #140e18)}
@@ -406,7 +402,7 @@ body.touch #toasts{bottom:250px}
   <div id="joyZone"></div>
   <div id="joyBase"><div id="joyKnob"></div></div>
   <div id="talkLbl" class="thinf"></div>
-  <button id="bAtk" class="tb" aria-label="Attack"><img id="atkIco" data-icon="sword_fa"></button><button id="bDash" class="tb" aria-label="Dash"><img data-icon="ui_dash"></button><button id="bTalk" class="tb" aria-label="Talk"><img data-icon="ui_talk"></button><button id="bPot" class="tb" aria-label="Potion"><img data-icon="potion"><span id="potBadge" class="badge">0</span></button><button id="bTorch" class="tb" aria-label="Torch"><img data-icon="torch"><span id="torBadge" class="badge">0</span></button>
+  <button id="bAtk" class="tb" aria-label="Attack"><img id="atkIco" data-icon="sword_fa"></button><button id="bDash" class="tb" aria-label="Dash"><img data-icon="ui_dash"></button><button id="bMount" class="tb" aria-label="Mount or dismount" type="button">Mount</button><button id="bTalk" class="tb" aria-label="Talk"><img data-icon="ui_talk"></button><button id="bPot" class="tb" aria-label="Potion"><img data-icon="potion"><span id="potBadge" class="badge">0</span></button><button id="bTorch" class="tb" aria-label="Torch"><img data-icon="torch"><span id="torBadge" class="badge">0</span></button>
 </div>
 <div id="dialog" class="hidden"><div class="pf dlgbox"><div id="dlgPortraitBox" class="inset"><canvas id="dlgPortrait"></canvas></div><div id="dlgMain"><div id="dlgHead"><span id="dlgName" class="nameplate"></span><span id="dlgSub"></span></div><div id="dlgText"></div></div><div id="dlgChoices"></div></div></div>
 <div id="panel" class="hidden"><div class="pf" id="panelBox"><div id="panelHead"><span id="panelTitle"></span><button id="panelX" class="pbtn sq" aria-label="Close"><img data-icon="ui_x"></button></div><div id="panelBody"></div></div></div>
@@ -424,7 +420,7 @@ body.touch #toasts{bottom:250px}
   <div id="saveInfo"></div>
   <button class="pbtn tbtn" id="btnNew">Start adventure</button>
   <div id="confirmNew" class="pf">Start a new world? Your saved adventure will be erased.<br><button class="pbtn gold" id="btnYes">Yes, new world</button><button class="pbtn" id="btnNo">Cancel</button></div>
-  <button class="pbtn tbtn" id="btnTutorial">Tutorial<span class="tdone" id="tutBadge" hidden><span aria-hidden="true">✓ </span>Completed</span></button>
+  <button class="pbtn tbtn" id="btnTutorial">Tutorial</button>
   <button class="pbtn tbtn" id="btnSkins">Skins</button>
   <button class="pbtn tbtn" id="btnHelp">How to play</button>
   <div id="accountRow" class="hidden"><span id="accountLine">Signed in as <b id="accountName"></b><span id="offlineNote" class="hidden"> · Offline</span></span><button class="pbtn hidden" id="btnLogout" type="button">Log out</button></div>
@@ -540,7 +536,7 @@ const Input = {
   take(a) { const t = this.req[a]; if (t && performance.now() - t < 400) { this.req[a] = 0; return true; } this.req[a] = 0; return false; },
   map: {
     up: ['KeyW', 'ArrowUp'], down: ['KeyS', 'ArrowDown'], left: ['KeyA', 'ArrowLeft'], right: ['KeyD', 'ArrowRight'],
-    attack: ['Space', 'KeyJ'], dash: ['ShiftLeft', 'ShiftRight', 'KeyK'], interact: ['KeyE', 'Enter'], potion: ['KeyH', 'KeyF'], torch: ['KeyT', 'KeyL'],
+    attack: ['Space', 'KeyJ'], dash: ['ShiftLeft', 'ShiftRight', 'KeyK'], interact: ['KeyE', 'Enter'], potion: ['KeyH', 'KeyF'], torch: ['KeyT', 'KeyL'], mount: ['KeyR'],
     quests: ['KeyQ'], bag: ['KeyI', 'KeyB'], map: ['KeyM'], menu: ['Escape'], c1: ['Digit1'], c2: ['Digit2'], c3: ['Digit3']
   },
   is(a) { for (const k of this.map[a]) if (this.down[k]) return true; return false; },
@@ -633,11 +629,12 @@ const RES = {
   arany: { n: 'Gold', price: 12 }, smaragd: { n: 'Emerald', price: 18 }, zafir: { n: 'Sapphire', price: 18 }, gyemant: { n: 'Diamond', price: 30 },
   rubin: { n: 'Ruby', price: 30 }, obszidian: { n: 'Obsidian', price: 25 }, mitril: { n: 'Mithril', price: 45 },
   tuzpor: { n: 'Fire Powder', price: 28 }, pokolko: { n: 'Hellrock', price: 60 }, tuztitan: { n: 'Fire Titanium', price: 240 },
+  gyuruero: { n: 'Power of the Ring', price: 0, special: 1 }, burnt: { n: 'Burnt Wood', price: 0, special: 1 },
   virag: { n: 'Flower', price: 1 }, gomba: { n: 'Mushroom', price: 2 }, kaktusz: { n: 'Cactus Fruit', price: 2 }, jeg: { n: 'Ice Crystal', price: 3 },
   ken: { n: 'Sulfur', price: 3 }, inda: { n: 'Vine', price: 2 }, szilank: { n: 'Crystal Shard', price: 0, special: 1 },
   foldmag: { n: 'Earth Core', price: 0, special: 1 }, balvany: { n: 'Gold Idol', price: 90 }, kard_vas: { n: 'Bandit Iron Sword', price: 22 }, ektoplazma: { n: 'Ectoplasm', price: 8 },
 };
-const RES_ORDER = ['fa', 'ko', 'szen', 'rez', 'vas', 'arany', 'smaragd', 'zafir', 'gyemant', 'rubin', 'obszidian', 'mitril', 'tuzpor', 'pokolko', 'tuztitan', 'virag', 'gomba', 'kaktusz', 'jeg', 'ken', 'inda', 'szilank', 'foldmag', 'balvany', 'kard_vas', 'ektoplazma'];
+const RES_ORDER = ['fa', 'ko', 'szen', 'rez', 'vas', 'arany', 'smaragd', 'zafir', 'gyemant', 'rubin', 'obszidian', 'mitril', 'tuzpor', 'pokolko', 'tuztitan', 'virag', 'gomba', 'kaktusz', 'jeg', 'ken', 'inda', 'szilank', 'foldmag', 'balvany', 'kard_vas', 'ektoplazma', 'gyuruero', 'burnt'];
 const ORES = [null,
   { id: 'szen', hard: 1, hp: 3, c: ['#1e1e22', '#55555e'] },
   { id: 'rez', hard: 1, hp: 4, c: ['#b8662e', '#f4a060'] },
@@ -679,6 +676,7 @@ const PICKS = TIER_MATS.map((m, i) => ({ n: TIER_NAME[m] + ' Pickaxe', pow: TOOL
 // Soul Scythe (only from Kharon, the Soul Merchant): sits right below the Fire Titanium Sword, so Fire Titanium stays the strongest
 MATS.lelek = ['#c8b4ff', '#4a2a7a'];
 SWORDS.splice(SWORDS.findIndex(s => s.m === 'tuztitan'), 0, { n: 'Soul Scythe', atk: 31, m: 'lelek', scythe: 1 });
+SWORDS.push({ n: 'Ruby Scythe', atk: 40, m: 'rubin', scythe: 1 });
 // saves before v7 stored tool indices of this older list (it still had a coal tier)
 const TIER_MATS_V2 = ['fa', 'szen', 'rez', 'vas', 'arany', 'smaragd', 'zafir', 'gyemant', 'obszidian', 'mitril', 'pokolko', 'tuztitan'];
 const OLD_GEAR_MATS = { sword: ['fa', 'rez', 'vas', 'arany', 'gyemant', 'rubin', 'mitril'], axe: ['fa', 'rez', 'vas', 'arany', 'gyemant', 'mitril'], pick: ['fa', 'rez', 'vas', 'arany', 'gyemant', 'mitril'] };
@@ -694,6 +692,7 @@ const SPECIALS = {
   lampas: { n: 'Lantern', desc: 'Throws much more light in the dark (caves and night).' },
   iranytu: { n: 'Compass', desc: 'Shows every cave on the map.' },
   csizma: { n: 'Lava Boots', desc: 'Walk across molten lava.' },
+  gyuru: { n: 'The Ring of Power', desc: 'A hell-forged ring. While you carry it: +6 attack and +4 defense.' },
   talizman: { n: 'Emerald Talisman', desc: 'Slowly heals you while you are out of combat.' },
 };
 // tree/rock data (overworld)
@@ -722,7 +721,7 @@ const RECIPES = {
   frost: [...SET('vas'), ...SET('zafir'), RC('armor', 2, { vas: 8 }), RC('special', 'iranytu', { vas: 2, rez: 2, zafir: 1 }), RC('torch', 0, { fa: 1, szen: 1 }, 4), RC('potion', 0, { jeg: 2, virag: 1 }, 2)],
   sand: [...SET('arany'), RC('armor', 3, { arany: 8, vas: 2 }), RC('special', 'iranytu', { arany: 2, rez: 3 }), RC('torch', 0, { fa: 1, szen: 1 }, 4)],
   mush: [...SET('smaragd'), ...SET('gyemant'), RC('special', 'talizman', { smaragd: 4, inda: 3, arany: 2 }), RC('potion', 0, { inda: 2, gomba: 2 }, 2), RC('special', 'lampas', { vas: 3, szen: 2, fa: 1 }), RC('torch', 0, { fa: 1, szen: 1, inda: 1 }, 6)],
-  dwarf: [...SET('gyemant'), ...SET('obszidian'), ...SET('mitril'), RC('armor', 4, { gyemant: 6, vas: 4 }), RC('armor', 5, { mitril: 6, obszidian: 3 }), RC('special', 'csizma', { obszidian: 4, rubin: 2 }), RC('heart', 0, { rubin: 2, gyemant: 2 }, 1), RC('torch', 0, { fa: 1, szen: 1 }, 4)],
+  dwarf: [...SET('gyemant'), ...SET('obszidian'), ...SET('mitril'), RC('sword', ti('sword', 'rubin'), { fa: 3, rubin: 5 }), RC('armor', 4, { gyemant: 6, vas: 4 }), RC('armor', 5, { mitril: 6, obszidian: 3 }), RC('special', 'csizma', { obszidian: 4, rubin: 2 }), RC('heart', 0, { rubin: 2, gyemant: 2 }, 1), RC('torch', 0, { fa: 1, szen: 1 }, 4)],
 };
 const SI = (k, m, p) => ({ k, t: ti(k, m), p });
 const SHOP_STOCK = {
@@ -841,6 +840,9 @@ SOLID_G[T.HLAVA] = 1;                                  // lava blocks everyone e
 [O.HSPIRE, O.HTREE, O.HFIRE].forEach(o => SOLID_O[o] = 1);
 const HELL_FLOOR = new Uint8Array(40); [T.HGROUND, T.HASH, T.HBRIM, T.HOBS, T.HCRACK, T.HBRIDGE, T.CFLOOR].forEach(t => HELL_FLOOR[t] = 1);
 CHOP[O.HTREE] = { hp: 5, hard: 2, drop: { fa: [1, 2], szen: [1, 2] } };
+Object.assign(O, { BURNT: 69 });
+SOLID_O[O.BURNT] = 1;
+CHOP[O.BURNT] = { hp: 5, hard: 2, drop: { burnt: [1, 2] } };
 MINE_OBJ[O.HSPIRE] = { hp: 7, hard: 3, drop: { ko: [1, 2], obszidian: [0, 1] } };
 CAVE_THEME[10] = { floor: '#3a2420', floorD: '#2a1814', floorL: '#4a302a', wall: '#4a2420', wallD: '#2a1210', wallL: '#6a3428', top: '#120806', moss: '#ff6a20', dark: 0.6, darkCol: '42,6,4', map: '#7a3a2a', hell: 1, glyph: '#ff6a20' };
 
@@ -869,6 +871,9 @@ Object.assign(ENEMIES, {
   hound: { name: 'Hellhound', plural: 'hellhounds', hp: 75, atk: 13, spd: 66, xp: 32, gold: [6, 12], ai: 'hound', r: 7, hgt: 13, aggro: 180, hell: 1 },
   serpent: { name: 'Lava Serpent', plural: 'lava serpents', hp: 120, atk: 15, spd: 46, xp: 50, gold: [10, 20], ai: 'serpent', r: 8, hgt: 18, aggro: 150, lavaOk: 1, hell: 1, light: 1, heavy: 2 },
   reaper: { name: 'Soul Reaper', plural: 'soul reapers', hp: 95, atk: 16, spd: 40, xp: 50, gold: [8, 16], ai: 'reaper', r: 6, hgt: 20, aggro: 190, hell: 1, shot: { spd: 115, col: '#c08aff' } },
+  fspirit: { name: 'Fire Spirit', plural: 'fire spirits', hp: 70, atk: 13, spd: 58, xp: 36, gold: [6, 14], ai: 'ranged', r: 6, hgt: 16, aggro: 180, light: 1, lavaOk: 1, hell: 1, shot: { spd: 125, col: '#ffd24a' } },
+  hzombie: { name: 'Hell Zombie', plural: 'hell zombies', hp: 90, atk: 12, spd: 22, xp: 28, gold: [4, 10], ai: 'zombie', r: 6, hgt: 15, aggro: 150, heavy: 1, hell: 1 },
+  godgoblin: { name: 'God Goblin', plural: 'god goblins', hp: 80, atk: 0, spd: 42, xp: 0, gold: [0, 0], ai: 'chase', r: 6, hgt: 14, aggro: 0, lavaOk: 1, hell: 1 },
 });
 const HELL_DROPS = {
   demon: [['demonszarv', 0.4], ['potion', 0.1]], himp: [['parazs', 0.15]], hknight: [['pokolacel', 0.45], ['potion', 0.15], ['rubin', 0.08]],
@@ -889,17 +894,20 @@ const HELL_CAVE_NAMES = ['Emberdeep', 'Ash Throat', 'Glowing Hollow', 'Sulfur Mi
 const HELL_CAVE_SPAWN = [['himp', 0.38], ['hound', 0.3], ['demon', 0.2], ['flamer', 0.12]];
 
 // ---- Souls: every Hell enemy is worth some (stronger = more). +1 per danger level ----
-const SOUL_VALUE = { himp: 2, hound: 3, flamer: 4, demon: 5, serpent: 6, reaper: 6, hknight: 8 };
+const SOUL_VALUE = { himp: 2, hound: 3, flamer: 4, demon: 5, serpent: 6, reaper: 6, hknight: 8, fspirit: 5, hzombie: 4 };
 // what the Soul Merchant trades (price in Souls). Fire Titanium is by far the most expensive.
 const SOUL_SHOP = [
   { res: 'tuzpor', p: 8, desc: 'A glowing, explosive powder. Every hell recipe needs it.' },
   { res: 'pokolko', p: 20, desc: 'Dark volcanic ore with red-hot veins. The base of Hellrock gear.' },
   { res: 'tuztitan', p: 120, desc: 'The rarest ore in the world. The stuff of the strongest weapons.' },
   { gear: 'sword', m: 'lelek', p: 320, desc: 'An ancient scythe taken from a soul reaper. Only a hair weaker than the Fire Titanium Sword.' },
+  { res: 'gyuruero', p: 45, desc: 'A shard of an old hell ring. Uriel sets it into the Ring of Power.' },
 ];
 
 // ---- Angel Craftsman recipes: Hell equipment, crafted for free from Hell materials ----
 RECIPES.angel = [
+  RC('sword', ti('sword', 'gyemant'), { gyemant: 4, vas: 2 }), RC('axe', ti('axe', 'gyemant'), { gyemant: 3, fa: 3 }), RC('pick', ti('pick', 'gyemant'), { gyemant: 3, vas: 3 }),
+  RC('special', 'gyuru', { tuzpor: 5, gyuruero: 1, arany: 15 }),
   RC('sword', ti('sword', 'pokolko'), { pokolko: 5, tuzpor: 3, mitril: 1 }), RC('pick', ti('pick', 'pokolko'), { pokolko: 4, tuzpor: 2 }), RC('axe', ti('axe', 'pokolko'), { pokolko: 3, tuzpor: 2 }),
   RC('armor', 4, { gyemant: 6, vas: 4 }), RC('armor', 6, { pokolko: 8, tuzpor: 4, pokolacel: 2 }),
   RC('sword', ti('sword', 'tuztitan'), { tuztitan: 3, pokolko: 3, tuzpor: 4 }), RC('pick', ti('pick', 'tuztitan'), { tuztitan: 2, pokolko: 3, tuzpor: 3 }), RC('axe', ti('axe', 'tuztitan'), { tuztitan: 2, pokolko: 2, tuzpor: 2 }),
@@ -932,6 +940,7 @@ const ANGEL_LINES = [
   'Fire Powder and Hellrock grow deep in the hell caves. Fire Titanium, if you find any, is only in the deepest tunnels.',
   'Kharon, the Soul Merchant, wanders Hell all day. He trades ore for the souls of demons you defeat.',
   'Our Craftsman forges the finest weapons from hell ore — free, if you bring the materials!',
+  'East of the gate you arrived through, a swirling soul gate opens onto the Land of the Lost Souls. God Goblins there will carry you over the lava.',
 ];
 const SOUL_LINES = [
   'Souls... every demon you fell could be mine. Yours, I mean. Then mine. Hehe.',
@@ -1347,7 +1356,7 @@ function genIcons() {
   }
   const tool = (kind, m) => () => {
     const col = MATS[m][0], dk = MATS[m][1];
-    if (kind === 'sword' && m === 'lelek') { for (let i = 0; i < 12; i++) { px('#3a2a2a', 2 + i, 14 - i, 1, 1); px('#1e1418', 3 + i, 14 - i, 1, 1); } for (let k = 0; k < 10; k++) { const x = 14 - k, y = 2 + Math.round(k * k * 0.07); px(k < 2 ? '#f0e8ff' : col, x, y, 1, 1); px(dk, x, y + 1, 1, 1); } px('#c08aff', 13, 4, 1, 1); px('#ffffff', 14, 2, 1, 1); }
+    if (kind === 'sword' && (m === 'lelek' || m === 'rubin')) { const edge = m === 'rubin' ? '#fff0f0' : '#f0e8ff'; const gem = m === 'rubin' ? '#ffd0d8' : '#c08aff'; for (let i = 0; i < 12; i++) { px('#3a2a2a', 2 + i, 14 - i, 1, 1); px('#1e1418', 3 + i, 14 - i, 1, 1); } for (let k = 0; k < 10; k++) { const x = 14 - k, y = 2 + Math.round(k * k * 0.07); px(k < 2 ? edge : col, x, y, 1, 1); px(dk, x, y + 1, 1, 1); } px(gem, 13, 4, 1, 1); px('#ffffff', 14, 2, 1, 1); }
     else if (kind === 'sword') { for (let i = 0; i < 9; i++) { px(dk, 4 + i, 10 - i, 2, 2); px(col, 4 + i, 10 - i, 1, 1); } px('#3a3a3a', 2, 10, 5, 1); px('#3a3a3a', 4, 9, 1, 4); px('#6a4424', 1, 13, 3, 2); }
     else if (kind === 'axe') { for (let i = 0; i < 11; i++) px('#7a4e28', 2 + i, 14 - i, 2, 1); px(col, 8, 1, 6, 5); px(col, 10, 0, 3, 8); px(dk, 8, 5, 6, 1); px(dk, 13, 1, 1, 6); }
     else if (kind === 'pick') { for (let i = 0; i < 11; i++) px('#7a4e28', 3 + i, 14 - i, 2, 1); px(col, 4, 2, 4, 2); px(col, 7, 2, 4, 3); px(col, 10, 4, 3, 4); px(col, 12, 7, 2, 4); px(col, 2, 3, 2, 2); px(dk, 6, 4, 5, 1); }
@@ -1363,6 +1372,9 @@ function genIcons() {
   mkI('sp_iranytu', () => { px('#b8902a', 2, 2, 12, 12); px('#f0e8d0', 3, 3, 10, 10); px('#d83a3a', 7, 4, 2, 4); px('#3a3a5a', 7, 8, 2, 4); px('#1a1a1a', 7, 7, 2, 2); });
   mkI('sp_csizma', () => { px('#24152e', 3, 2, 6, 10); px('#24152e', 3, 10, 11, 4); px('#8a64c0', 4, 3, 2, 7); px('#ff4a62', 9, 11, 3, 2); px('#ff8a2a', 3, 14, 11, 1); });
   mkI('sp_talizman', () => { px('#d8b040', 7, 0, 2, 4); px('#d8b040', 4, 4, 8, 9); px('#1aa048', 5, 5, 6, 7); px('#7dffa0', 6, 6, 2, 2); });
+  mkI('sp_gyuru', () => { px('#ffd84a', 3, 6, 10, 3); px('#c89a20', 3, 8, 10, 1); px('#ff4a62', 6, 4, 4, 3); px('#fff0a0', 7, 4, 2, 1); px('#8ef0ff', 4, 6, 1, 2); });
+  mkI('r_gyuruero', () => { px('#ffd84a', 4, 5, 8, 6); px('#c89a20', 4, 10, 8, 1); px('#ff4a62', 6, 2, 4, 4); px('#fff4b0', 7, 3, 2, 1); });
+  mkI('r_burnt', () => { px('#2a1810', 3, 4, 10, 8); px('#4a2a18', 4, 5, 8, 6); px('#1a0c08', 3, 10, 10, 2); px('#ff6a1a', 6, 6, 2, 2); px('#ffd060', 9, 7, 1, 1); });
   mkI('gold', () => { px('#b8862a', 3, 3, 10, 10); px('#ffd84a', 3, 3, 9, 9); px('#fff4b0', 5, 5, 2, 2); px('#b8862a', 7, 6, 2, 4); });
 }
 
@@ -1553,6 +1565,9 @@ const LOOKS = {
   witch: { skin: '#9ab08a', hair: '#2a2a2a', shirt: '#2a5a3a', pants: '#1a3a2a', robe: 1, hat: 'hood', hood: '#1a4a2a', glow: '#a0ff60', style: 'long' },
 };
 const _playerLooks = {};
+LOOKS.godgoblin = { species: 'goblin', skin: '#d8c24a', shirt: '#8a1a1a', pants: '#3a2010', eye: '#fff0a0', style: 'bald', cape: '#ff6a1a' };
+LOOKS.hellzombie = { species: 'zombie', skin: '#6a4030', hair: '#2a140c', shirt: '#4a1a12', pants: '#2a1410', shoe: '#1a0c08', style: 'long' };
+LOOKS.hellzombie2 = { species: 'zombie', skin: '#8a5038', hair: '#3a2014', shirt: '#5a2418', pants: '#3a1810', shoe: '#1a0c08', style: 'bald' };
 LOOKS.zombie = { species: 'zombie', skin: '#8aa070', hair: '#3a3a2a', shirt: '#5a5a7a', pants: '#3a3a4a', shoe: '#2a2a2a', style: 'long' };
 LOOKS.zombie2 = { species: 'zombie', skin: '#7a9a78', hair: '#5a4a2a', shirt: '#7a5a3a', pants: '#4a3a2a', shoe: '#2a2a2a', style: 'bald' };
 function heroLookFor(t, tint) {
@@ -2231,6 +2246,9 @@ function genHellArt() {
   }));
   // ---- objects ----
   ART.o[O.HSPIRE] = mk(2, v => { G.fillStyle = 'rgba(0,0,0,0.35)'; ell(8, 30, 7, 2); for (let y = 2; y < 30; y++) { const hw = Math.round(1 + (y - 2) * (v ? 5.5 : 6.5) / 28); P('#3a2420', 8 - hw, y, hw * 2, 1); P('#5a3428', 8 - hw, y, 1, 1); P('#1e100c', 8 + hw - 1, y, 1, 1); } P('#ff6a1a', 7, 14, 1, 5); P('#ffb040', 7, 15, 1, 1); P('#ff6a1a', 9, 22, 1, 4); if (v) { P('#ff6a1a', 6, 8, 1, 3); } }, 16, 32); ART.oa[O.HSPIRE] = [8, 31];
+  ART.o[O.BURNT] = mk(2, v => { G.fillStyle = 'rgba(0,0,0,0.35)'; ell(12, 31, 7, 2); const c = '#1a100c', d = '#0c0806';
+    const br = (x, y, dx, dy, n) => { for (let i = 0; i < n; i++) { P(i % 2 ? c : d, Math.round(x + dx * i), Math.round(y + dy * i)); } };
+    br(11, 28, 0, -1, 14); br(11, 16, -0.7, -0.7, 8 + v); br(13, 15, 0.6, -0.9, 8); P('#3a2418', 10, 20, 3, 2); P('#ff6a1a', 11, 18, 1, 2); }, 24, 32); ART.oa[O.BURNT] = [12, 31];
   ART.o[O.HTREE] = mk(2, v => { G.fillStyle = 'rgba(0,0,0,0.35)'; ell(12, 31, 8, 2); const c = '#2a1a16', d = '#140c0a';
     P(c, 10, 14, 4, 18); P(d, 13, 14, 1, 18); P(c, 8, 29, 8, 3); const br = (x0, y0, dx, dy, n) => { let x = x0, y = y0; for (let i = 0; i < n; i++) { P(i < n / 2 ? c : d, Math.round(x), Math.round(y), i < 3 ? 2 : 1, 1); if (i === n - 1) P('#ff6a1a', Math.round(x), Math.round(y)); x += dx; y += dy; } };
     br(11, 15, -0.9, -0.8, 9 + v); br(13, 14, 0.8, -1, 10); br(12, 14, 0.1, -1, 11 - v); br(11, 21, 1, -0.5, 6); P('#ff6a1a', 11, 20, 1, 3); P('#ffb040', 11, 21, 1, 1); P('#ff6a1a', 12, 26, 1, 2); }, 24, 32); ART.oa[O.HTREE] = [12, 31];
@@ -2802,13 +2820,13 @@ function caveFlood(m, sx, sy) {
 }
 function genCave(cv, worldSeed) {
   const rng = mulberry32((worldSeed ^ hashStr(cv.id)) >>> 0);
-  const special = cv.kind === 'temple' || cv.kind === 'dungeon' || cv.kind === 'hell';
-  const m = cv.kind === 'hell' ? genHellLayout(cv, rng) : cv.kind === 'temple' ? genTempleLayout(cv, rng) : cv.kind === 'dungeon' ? genDungeonLayout(cv, rng) : cv.boss ? genBossLayout(cv, rng) : genCaveLayout(cv, rng);
+  const special = cv.kind === 'temple' || cv.kind === 'dungeon' || cv.kind === 'hell' || cv.kind === 'lost';
+  const m = cv.kind === 'lost' ? genLostLayout(cv, rng) : cv.kind === 'hell' ? genHellLayout(cv, rng) : cv.kind === 'temple' ? genTempleLayout(cv, rng) : cv.kind === 'dungeon' ? genDungeonLayout(cv, rng) : cv.boss ? genBossLayout(cv, rng) : genCaveLayout(cv, rng);
   const { w, h } = m; const idx = (x, y) => y * w + x; const b = cv.biome;
   m.kind = 'cave'; m.cave = cv; m.biome = b; m.theme = special ? cv.theme : b; m.dmg = new Map(); m.wk = new Uint8Array(w * h); m.art = getCaveArt(m.theme); m.explored = new Uint8Array(w * h);
   // bedrock border
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (x < 2 || y < 2 || x > w - 3 || y > h - 3) { m.ground[idx(x, y)] = T.BEDROCK; m.obj[idx(x, y)] = 0; }
-  if (cv.kind !== 'hell') m.ground[idx(m.ent.x, m.ent.y)] = T.CSTAIRS;
+  if (cv.kind !== 'hell' && cv.kind !== 'lost') m.ground[idx(m.ent.x, m.ent.y)] = T.CSTAIRS;
   let dist = caveFlood(m, m.ent.x, m.ent.y); let maxD = 1; for (let i = 0; i < dist.length; i++) if (dist[i] > maxD) maxD = dist[i];
   // pools (lava / water) that never cut the cave in two
   if (!cv.boss && !special) {
@@ -3354,6 +3372,10 @@ function genHellExtras(m, seed) {
   for (const [dx, dy] of D4) link(vx + dx * 15, vy + dy * 15);
   link(m.arena.gate.x, m.arena.gate.y);
   for (const c of m.hcaves) link(c.exit.x, c.exit.y);
+  const gx = clamp(ax + 22, 8, w - 9), gy = clamp(ay + 6, 8, h - 9);
+  for (let y = gy - 3; y <= gy + 3; y++) for (let x = gx - 3; x <= gx + 3; x++) { if (!inB(x, y)) continue; if (Math.hypot(x - gx, y - gy) <= 3) clearT(idx(x, y), T.HOBS); }
+  m.lostGate = { x: gx, y: gy };
+  link(gx, gy);
   // a paved road from the arrival platform to the nearest village gate
   { const fl = caveFlood(m, ax, ay); let g0 = null, gd = 1e9; for (const [dx, dy] of D4) { const x = vx + dx * 15, y = vy + dy * 15, d = fl[idx(x, y)]; if (d >= 0 && d < gd) { gd = d; g0 = { x, y }; } }
     if (g0) { let x = g0.x, y = g0.y; for (let s = 0; s < 400; s++) { const i = idx(x, y); if (Math.hypot(x - ax, y - ay) < 7) break; if (m.ground[i] !== T.HBRIDGE && m.zone[i] === 0) { if (m.obj[i] !== O.CHEST) { m.ground[i] = T.HPATH; m.obj[i] = 0; } } let nb = -1, nd = fl[i]; for (const [dx, dy] of D4) { const j = idx(x + dx, y + dy); if (fl[j] >= 0 && fl[j] < nd) { nd = fl[j]; nb = j; } } if (nb < 0) break; x = nb % w; y = (nb / w) | 0; } } }
@@ -3403,14 +3425,14 @@ function moveEnt(e, dx, dy, m) {
 // ---------- player ----------
 function newPlayer() { return { kind: 'player', x: 0, y: 0, hw: 4, hh: 4, r: 5, hgt: 15, dir: 'down', ax: 0, ay: 1, hp: 60, level: 1, xp: 0, gold: 15, sword: 0, axe: 0, pick: -1, armor: 0, potions: 2, torches: 3, hearts: 0, atkT: 0, atkCd: 0, atkAng: 0, swing: 1, tool: 'sword', hitSet: null, dashT: 0, dashCd: 0, dvx: 0, dvy: 0, inv: 0, walkT: 0, moving: false, kbx: 0, kby: 0, flash: 0, regenT: 0, goto: null, combatT: 0 }; }
 const pMaxHp = p => 60 + (p.level - 1) * 10 + p.hearts * 20;
-const pAtk = p => 2 + p.level + SWORDS[p.sword].atk;
-const pDef = p => ARMORS[p.armor].def;
+const pAtk = p => 2 + p.level + SWORDS[p.sword].atk + (Game.specials && Game.specials.gyuru ? 6 : 0);
+const pDef = p => ARMORS[p.armor].def + (Game.specials && Game.specials.gyuru ? 4 : 0);
 const xpNeed = l => Math.floor(20 * Math.pow(l, 1.6));
 const toolName = (k, t) => GEAR[k][t].n;
 const needToolName = (k, hard) => { const list = k === 'axe' ? AXES : PICKS; const t = list.find(x => x.pow >= hard); return t ? t.n : list[list.length - 1].n; };
 
 function updatePlayer(dt) {
-  const p = Game.p, m = curMap(); p.lavaOk = !!Game.specials.csizma || inHell();
+  const p = Game.p, m = curMap(); p.lavaOk = !!Game.specials.csizma || !!p.ride || inHell() || (inLost() && pFireproof());
   let mx = 0, my = 0;
   if (Input.is('left')) mx -= 1; if (Input.is('right')) mx += 1; if (Input.is('up')) my -= 1; if (Input.is('down')) my += 1;
   if (Input.joy.active && (Input.joy.x || Input.joy.y)) { mx = Input.joy.x; my = Input.joy.y; }
@@ -3435,9 +3457,10 @@ function updatePlayer(dt) {
   if ((Input.is('attack') || Input.holdAtk || Input.take('attack')) && p.atkCd <= 0) startAction();
   if (Input.hit('potion')) usePotion();
   if (Input.hit('torch')) placeTorch();
+  if (Input.hit('mount')) toggleMount();
   let vx, vy;
   if (p.dashT > 0) { p.dashT -= dt; vx = p.dvx; vy = p.dvy; p.trailT = (p.trailT || 0) - dt; if (p.trailT <= 0) { p.trailT = 0.03; try { Game.trail.push({ s: entityVisual(p).s, x: p.x, y: p.y, t: 0 }); } catch (er) { } } }
-  else { const spd = (p.atkT > 0 ? 50 : 76) * ml * (inHell() ? (p.slowK || 1) : 1); vx = mx / (ml || 1) * spd; vy = my / (ml || 1) * spd; }
+  else { const spd = (p.atkT > 0 ? 50 : 76) * ml * (p.ride ? 1.65 : 1) * (inHell() ? (p.slowK || 1) : 1); vx = mx / (ml || 1) * spd; vy = my / (ml || 1) * spd; }
   vx += p.kbx; vy += p.kby; const kd = Math.max(0, 1 - dt * 9); p.kbx *= kd; p.kby *= kd;
   moveEnt(p, vx * dt, vy * dt, m);
   if (p.moving) p.walkT += dt;
@@ -3523,7 +3546,7 @@ function breakTarget(tg) {
   if (m.kind === 'over') {
     if (TREE_OBJ[tg.o]) { m.obj[tg.i] = O.STUMP; Game.regrow.push({ i: tg.i, o: tg.o, t: Game.time + 240 }); SFX.play('fall'); for (let i = 0; i < 14; i++) addPart(hx + rr(-10, 10), hy - rr(8, 28), rr(-30, 30), rr(-20, 20), 0.8, i % 2 ? '#3f9a45' : '#2a6a2e', 2); }
     else { m.obj[tg.i] = 0; Game.regrow.push({ i: tg.i, o: tg.o, t: Game.time + 300 }); SFX.play('break'); }
-  } else if (tg.o) { m.obj[tg.i] = 0; SFX.play(TREE_OBJ[tg.o] || tg.o === O.HTREE ? 'fall' : 'break'); for (let i = 0; i < 12; i++) addPart(hx + rr(-8, 8), hy - rr(0, 20), rr(-40, 40), rr(-50, 10), 0.6, i % 2 ? '#3a2420' : '#ff6a1a', 2); }
+  } else if (tg.o) { m.obj[tg.i] = 0; SFX.play(TREE_OBJ[tg.o] || tg.o === O.HTREE || tg.o === O.BURNT ? 'fall' : 'break'); for (let i = 0; i < 12; i++) addPart(hx + rr(-8, 8), hy - rr(0, 20), rr(-40, 40), rr(-50, 10), 0.6, i % 2 ? '#3a2420' : '#ff6a1a', 2); }
   else {
     m.ground[tg.i] = m.hell ? hellFloorAt(m, tg.i) : T.CFLOOR; const wasOre = m.ore[tg.i]; m.ore[tg.i] = 0; if (m.obj[tg.i] === O.WTORCH) m.obj[tg.i] = 0;
     computeWK(m, tg.tx - 2, tg.ty - 3, tg.tx + 2, tg.ty + 2); redrawCaveMini(m, tg.tx - 2, tg.ty - 3, tg.tx + 2, tg.ty + 2);
@@ -3566,6 +3589,7 @@ function playerDie() { if (Game.tutorial) { const p = Game.p; p.hp = pMaxHp(p); 
 function respawn() {
   const p = Game.p; const lost = Math.floor(p.gold * 0.2); p.gold -= lost; p.hp = pMaxHp(p); p.inv = 1.5;
   transition(() => {
+    if (inLost()) { const C = Game.cave, p2 = Game.p; p2.ride = false; p2.hp = Math.max(1, Math.round(pMaxHp(p2) * 0.5)); p2.x = C.ent.x * 16 + 8; p2.y = (C.ent.y + 1) * 16 + 10; snapCam(); Game.state = 'play'; UI.toast('You woke at the soul gate.', 'warn'); saveGame(); return; }
     if (inHell()) { hellRespawn(); Game.state = 'play'; UI.toast('You woke at the hell gate.' + (lost ? ' You lost ' + lost + ' gold.' : ''), 'warn'); saveGame(); return; }
     Game.mode = 'over'; Game.cave = null; Game.boss = null; Game.portal = null; Game.enemies = []; Game.shots = []; Game.hazards = []; Game.raid = null; Game.nextRaid = Game.time + 240; for (const k in structRun) structRun[k].active = false;
     const v = villageById(Game.lastVillage) || Game.world.start; p.x = v.cx * 16 + 8; p.y = (v.cy + 3) * 16 + 10; snapCam();
@@ -3981,7 +4005,9 @@ function findInteract() {
     for (const cv of Game.world.caves) { const d = Math.hypot(cv.tx * 16 + 8 - p.x, (cv.ty + 1) * 16 + 4 - p.y); if (d < 30) { const locked = cv.kind === 'dungeon' && !Game.unlocked[cv.id]; c(d, { kind: locked ? 'gate' : 'enter', cv, ref: cv, label: locked ? ((Game.inv.foldmag || 0) > 0 ? 'Insert Earth Core' : 'Sealed gate') : 'Enter: ' + cv.name }); } }
     for (const ch of Game.world.chests) { if (Game.opened['ow:' + ch.i]) continue; const d = Math.hypot(ch.x * 16 + 8 - p.x, ch.y * 16 + 14 - p.y); if (d < 26) c(d, { kind: 'chest', ch, ref: ch, label: 'Open chest' }); }
   } else {
-    const C = Game.cave; const sd = Math.hypot(C.ent.x * 16 + 8 - p.x, C.ent.y * 16 + 10 - p.y); if (sd < 22) c(sd, { kind: 'exit', ref: 'exit', label: C.cave.kind === 'hell' ? 'Back to the surface (portal)' : C.cave.kind ? 'Exit' : 'Climb out of the cave' });
+    const C = Game.cave; const sd = Math.hypot(C.ent.x * 16 + 8 - p.x, C.ent.y * 16 + 10 - p.y); if (sd < 22) c(sd, { kind: 'exit', ref: 'exit', label: C.cave.kind === 'hell' ? 'Back to the surface (portal)' : C.cave.kind === 'lost' ? 'Return to Hell (portal)' : C.cave.kind ? 'Exit' : 'Climb out of the cave' });
+    if (C.lostGate) { const gd = Math.hypot(C.lostGate.x * 16 + 8 - p.x, C.lostGate.y * 16 + 8 - p.y); if (gd < 30) c(gd, { kind: 'lostportal', ref: 'lost', label: 'Enter: The Land of the Lost Souls' }); }
+    if (inLost()) { for (const n of C.hnpcs || []) { const dn = Math.hypot(n.x - p.x, n.y - p.y); if (dn < 40) c(dn, { kind: 'hnpc', npc: n, ref: n, label: 'Talk: ' + n.name + ' (Soul Merchant)' }); } if (!p.ride) { for (const e of Game.enemies) { if (e.type !== 'godgoblin' || e.dead) continue; const md = Math.hypot(e.x - p.x, e.y - p.y); if (md < 28) c(md, { kind: 'mount', ref: e, label: 'Mount God Goblin (R)' }); } } }
     if (C.altar) { const d = Math.hypot(C.altar.x * 16 + 8 - p.x, C.altar.y * 16 + 22 - p.y); const cv = C.cave; if (d < 28 && ((cv.core && !Game.coreTaken[cv.id]) || (!cv.core && !Game.opened[cv.id + ':altar']))) c(d, { kind: 'altar', ref: 'altar', label: cv.core ? 'Take the Earth Core' : 'Take the gold idol' }); }
     for (const ch of C.chests) { if (Game.opened[C.cave.id + ':' + ch.i]) continue; const d = Math.hypot(ch.x * 16 + 8 - p.x, ch.y * 16 + 14 - p.y); if (d < 26) c(d, { kind: 'chest', ch, ref: ch, label: 'Open chest' }); }
     if (C.hell) hellPlusInteract(C, p, c);
@@ -3992,7 +4018,7 @@ function findInteract() {
 }
 function doInteract(it) {
   Game.p.goto = null;
-  if (it.kind === 'npc') talkTo(it.npc); else if (it.kind === 'gate') tryUnlock(it.cv); else if (it.kind === 'altar') takeAltar(); else if (it.kind === 'hellportal') askEnterHell(); else if (it.kind === 'enter') enterCave(it.cv); else if (it.kind === 'exit') exitCave(); else if (it.kind === 'chest') openChest(it.ch); else if (it.kind === 'torch') pickupTorch(it.i); else if (it.kind === 'hnpc') hellTalk(it.npc); else if (it.kind === 'throne') askSatanRematch();
+  if (it.kind === 'npc') talkTo(it.npc); else if (it.kind === 'gate') tryUnlock(it.cv); else if (it.kind === 'altar') takeAltar(); else if (it.kind === 'hellportal') askEnterHell(); else if (it.kind === 'lostportal') enterLost(); else if (it.kind === 'mount') toggleMount(); else if (it.kind === 'enter') enterCave(it.cv); else if (it.kind === 'exit') exitCave(); else if (it.kind === 'chest') openChest(it.ch); else if (it.kind === 'torch') pickupTorch(it.i); else if (it.kind === 'hnpc') hellTalk(it.npc); else if (it.kind === 'throne') askSatanRematch();
 }
 // tap/click on the world: talk / enter / open (walks there first if needed)
 function tapWorld(sx, sy) {
@@ -4060,6 +4086,7 @@ function enterCave(cv) {
   });
 }
 function exitCave() {
+  if (inLost()) { leaveLost(); return; }
   SFX.play('door');
   transition(() => { const p = Game.p; Game.mode = 'over'; Game.cave = null; Game.boss = null; Game.portal = null; Game.hazards = []; Game.golemAwake = false; for (const k in structRun) structRun[k].active = false; Game.enemies = []; Game.shots = []; Game.pickups = []; p.x = Game.overPos.x; p.y = Game.overPos.y; p.dir = 'down'; p.goto = null; snapCam(); UI.hideBoss(); Game.state = 'play'; Game.curBiome = -1; saveGame(); });
 }
@@ -4087,7 +4114,7 @@ function spawnTick(dt) {
       break;
     }
   } else {
-    const C = Game.cave; if (C.cave.kind === 'hell') return hellSpawnTick(); Game.spawnT = 14; if (Game.enemies.length >= 16 || C.cave.kind === 'dungeon') return;
+    const C = Game.cave; if (C.cave.kind === 'hell') return hellSpawnTick(); if (C.cave.kind === 'lost') return lostSpawnTick(); Game.spawnT = 14; if (Game.enemies.length >= 16 || C.cave.kind === 'dungeon') return;
     for (let tries = 0; tries < 20; tries++) {
       const tx = ri(2, C.w - 3), ty = ri(2, C.h - 3); if (C.ground[ty * C.w + tx] !== T.CFLOOR || C.obj[ty * C.w + tx]) continue;
       const d = Math.hypot(tx * 16 - p.x, ty * 16 - p.y) / 16; if (d < 12 || d > 28 || nearLight(C, tx, ty, 6) || Math.hypot(tx - C.ent.x, ty - C.ent.y) < 7) continue;
@@ -4101,7 +4128,7 @@ function saveGame() {
   if (Game.tutorial) return;
   if (!Game.p || Game.state === 'title') return; const p = Game.p; const pos = (Game.mode === 'over' ? null : Game.overPos) || { x: p.x, y: p.y };
   const piles = {}; Game.world.villages.forEach(v => piles[v.id] = [v.logpile.n, v.stonepile.n]);
-  const data = { v: 2, gv: 3, ws: Game.world.w, seed: Game.world.seed, day: Game.day, p: { x: pos.x, y: pos.y, level: p.level, xp: p.xp, gold: p.gold, hp: Math.max(1, p.hp), sword: p.sword, axe: p.axe, pick: p.pick, armor: p.armor, potions: p.potions, torches: p.torches, hearts: p.hearts }, inv: Game.inv, specials: Game.specials, quests: Game.quests, cleared: Game.cleared, opened: Game.opened, caveDiff: Game.caveDiff, owTorches: Game.owTorches, knownCaves: Game.knownCaves, explored: packBits(Game.explored), lastVillage: Game.lastVillage, won: Game.won, kills: Game.kills, playT: Math.round(Game.playT), tracked: Game.tracked, piles, hintCave: Game.hintCave, hintTemple: Game.hintTemple, dayN: Game.dayN, structState: Game.structState, knownStructs: Game.knownStructs, coreTaken: Game.coreTaken, unlocked: Game.unlocked, dgProg: Game.dgProg, dgIds: Game.world.dgIds, coreFor: Game.coreFor || null, hellUnlocked: Game.hellUnlocked, hellVisited: Game.hellVisited, lavaHint: Game.lavaHint, inHell: inHell() ? { x: p.x, y: p.y } : null, hellExplored: inHell() ? packBits(Game.cave.explored) : Game.hellExplored, hp2: hellPlusSave() };
+  const data = { v: 2, gv: 3, ws: Game.world.w, seed: Game.world.seed, day: Game.day, p: { x: pos.x, y: pos.y, level: p.level, xp: p.xp, gold: p.gold, hp: Math.max(1, p.hp), sword: p.sword, axe: p.axe, pick: p.pick, armor: p.armor, potions: p.potions, torches: p.torches, hearts: p.hearts }, inv: Game.inv, specials: Game.specials, quests: Game.quests, cleared: Game.cleared, opened: Game.opened, caveDiff: Game.caveDiff, owTorches: Game.owTorches, knownCaves: Game.knownCaves, explored: packBits(Game.explored), lastVillage: Game.lastVillage, won: Game.won, kills: Game.kills, playT: Math.round(Game.playT), tracked: Game.tracked, piles, hintCave: Game.hintCave, hintTemple: Game.hintTemple, dayN: Game.dayN, structState: Game.structState, knownStructs: Game.knownStructs, coreTaken: Game.coreTaken, unlocked: Game.unlocked, dgProg: Game.dgProg, dgIds: Game.world.dgIds, coreFor: Game.coreFor || null, hellUnlocked: Game.hellUnlocked, hellVisited: Game.hellVisited, lavaHint: Game.lavaHint, inHell: inHell() ? { x: p.x, y: p.y } : null, hellExplored: inHell() ? packBits(Game.cave.explored) : Game.hellExplored, inLost: inLost() ? { x: p.x, y: p.y } : null, hellReturn: Game.hellReturn || null, ride: !!Game.p.ride, hp2: hellPlusSave() };
   storeSet(SAVE_KEY, JSON.stringify(data));
 }
 function loadSave() { const s = storeGet(SAVE_KEY); if (!s) return null; try { const d = JSON.parse(s); return d && d.v === 2 ? d : null; } catch (e) { return null; } }
@@ -4126,13 +4153,14 @@ function startGame(save) {
   UI.resetFog(); markExplored(); snapCam(); Game.state = 'play'; document.body.classList.remove('intitle');
   clearTimeout(Game._introT);
   if (!save) Game._introT = setTimeout(() => { if (Game.state === 'play') UI.intro(); }, 400); else UI.toast('Welcome back, adventurer!', 'gold');
-  if (save && save.inHell && hellUnlockedNow()) { Game.overPos = { x: p.x, y: p.y }; enterHell(true, save.inHell); }
+  if (save && save.inLost && save.hellReturn && hellUnlockedNow()) { Game.overPos = { x: p.x, y: p.y }; Game.hellReturn = save.hellReturn; enterHell(true, save.hellReturn); enterLost(true, save.inLost); if (save.ride) Game.p.ride = true; }
+  else if (save && save.inHell && hellUnlockedNow()) { Game.overPos = { x: p.x, y: p.y }; enterHell(true, save.inHell); }
   saveGame();
 }
 function markExplored() {
   const p = Game.p, R = 10;
   if (Game.mode === 'over') { const w = Game.world, cx = Math.floor(p.x / 16), cy = Math.floor(p.y / 16); for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++) { if (x < 0 || y < 0 || x >= w.w || y >= w.h || (x - cx) ** 2 + (y - cy) ** 2 > R * R) continue; const i = y * w.w + x; if (!Game.explored[i]) { Game.explored[i] = 1; UI.fogClear(x, y); } } for (const c of w.caves) if (!c.kind && !Game.knownCaves[c.id] && Math.hypot(c.tx - cx, c.ty - cy) < R) { Game.knownCaves[c.id] = true; UI.toast('🕳️ You found a new cave: ' + c.name, 'quest'); }
-    for (const s of w.structs) if (!Game.knownStructs[s.id] && Math.hypot(s.tx - cx, s.ty - cy) < R + s.r * 0.5) { Game.knownStructs[s.id] = true; if (s.cv) Game.knownCaves[s.cv.id] = true; const K = STRUCT_KIND[s.type]; UI.toast(K.icon + ' Discovered: ' + s.name + ' (' + K.n + ')', 'quest'); } }
+    for (const s of w.structs) if (!Game.knownStructs[s.id] && Math.hypot(s.tx - cx, s.ty - cy) < R + s.r * 0.5) { Game.knownStructs[s.id] = true; if (s.cv) Game.knownCaves[s.cv.id] = true; } }
   else { const C = Game.cave, cx = Math.floor(p.x / 16), cy = Math.floor(p.y / 16), r = inHell() ? 10 : Game.specials.lampas ? 9 : 6; for (let y = cy - r; y <= cy + r; y++) for (let x = cx - r; x <= cx + r; x++) if (x >= 0 && y >= 0 && x < C.w && y < C.h) C.explored[y * C.w + x] = 1; }
 }
 
@@ -4144,7 +4172,7 @@ function update(dt) {
   if (Game.state !== 'play') return;
   if (Game.mode === 'over') { for (const n of Game.npcs) { if (Math.abs(n.v.cx * 16 - p.x) < 700 && Math.abs(n.v.cy * 16 - p.y) < 700) updNpc(n, dt); } }
   spawnTick(dt); structTick(dt); raidTick(dt);
-  if (Game.mode === 'cave') { const kk = Game.cave.cave.kind; if (kk === 'temple') templeTick(dt); else if (kk === 'dungeon') dungeonTick(dt); else if (kk === 'hell') hellTick(dt); }
+  if (Game.mode === 'cave') { const kk = Game.cave.cave.kind; if (kk === 'temple') templeTick(dt); else if (kk === 'dungeon') dungeonTick(dt); else if (kk === 'hell') hellTick(dt); else if (kk === 'lost') lostTick(dt); }
   for (const e of Game.enemies) if (!e.dead) updEnemy(e, dt, m);
   updHazards(dt);
   Game.enemies = Game.enemies.filter(e => !e.dead);
@@ -4163,7 +4191,7 @@ function update(dt) {
   if (Game.mode === 'over') {
     const tx2 = Math.floor(p.x / 16), ty2 = Math.floor(p.y / 16); const v = nearVillage(tx2, ty2, 15);
     if (v !== Game.curVillage) { Game.curVillage = v; if (v) { Game.lastVillage = v.id; UI.banner(v.name, 'Village of the ' + CULTURES[v.culture].people + ' · ' + BIOMES[v.biome].icon + ' ' + BIOMES[v.biome].name); saveGame(); } }
-    const st = v ? null : nearStruct(tx2, ty2, -1); if (st !== Game.curStruct) { Game.curStruct = st; if (st) { const K = STRUCT_KIND[st.type]; UI.banner(K.icon + ' ' + st.name, st.type === 'camp' ? (structCleared(st) ? 'Abandoned bandit camp' : 'Bandit camp · Watch out!') : st.type === 'haunted' ? (structCleared(st) ? 'Cleansed, abandoned village' : 'Cursed village · Ghosts and zombies') : st.type === 'temple' ? 'Ancient temple · Slimes live here' : (Game.unlocked[st.cv.id] ? 'Earth Dungeon · The gate is open' : 'Earth Dungeon · Sealed gate')); Game.curBiome = Game.world.biome[ty2 * Game.world.w + tx2]; } }
+    const st = v ? null : nearStruct(tx2, ty2, -1); if (st !== Game.curStruct) { Game.curStruct = st; if (st) Game.curBiome = Game.world.biome[ty2 * Game.world.w + tx2]; }
     { let hk = 0; for (const s of Game.world.structs) { if (s.type !== 'haunted') continue; const d = Math.hypot(s.tx - tx2, s.ty - ty2); let k = clamp(1 - (d - s.r * 0.75) / (s.r * 0.6), 0, 1); if (structCleared(s)) k *= 0.3; hk = Math.max(hk, k); } Game.hauntK += (hk - Game.hauntK) * Math.min(1, dt * 1.5); }
     const b = Game.world.biome[ty2 * Game.world.w + tx2];
     if (!v && !st) { if (b !== Game.curBiome) { Game.biomeT += dt; if (Game.biomeT > 1.2) { Game.curBiome = b; Game.biomeT = 0; if (!Game.biomeShown[b] || Game.time - Game.biomeShown[b] > 90) { Game.biomeShown[b] = Game.time; UI.banner(BIOMES[b].icon + ' ' + BIOMES[b].name, ''); } } } else Game.biomeT = 0; }
@@ -4558,17 +4586,132 @@ function enterHell(direct, pos) {
     if (pos && !boxHit(C, pos.x, pos.y, p.hw, p.hh)) { p.x = pos.x; p.y = pos.y; } else { p.x = C.ent.x * 16 + 8; p.y = (C.ent.y + 2) * 16 + 10; }
     p.dir = 'down'; snapCam(); Game.state = 'play'; Game.hellBiome = -1; Game.spawnT = 3;
     if (!direct) { UI.banner('🔥 Hell', 'A new dimension · Lava burns, and the enemies are cruel!'); Game.shake = 6; SFX.play('boss'); }
+    if (Game.cave.lostGate && !Game.lostHint) { Game.lostHint = 1; setTimeout(() => UI.toast('A soul gate stands east of this platform. It leads to the Land of the Lost Souls.', 'quest'), 7000); }
     if (!Game.hellVisited) { Game.hellVisited = 1; setTimeout(() => UI.toast('💡 In Hell you can walk through lava, but it burns! The return portal is where you arrived. Monsters do not come near the braziers.', 'quest'), 2200); }
     if (!Game.hp2Intro) { Game.hp2Intro = 1; setTimeout(() => UI.toast('😇 The paved road from the portal leads to Angel Village — you are safe there, and the Angel Craftsman forges hell gear!', 'quest'), 5200); }
     saveGame();
   };
   if (direct) go(); else { SFX.play('portal'); const f = $('fade'); f.classList.add('hell'); transition(() => { f.classList.remove('hell'); go(); }); }
 }
+const inLost = () => Game.mode === 'cave' && Game.cave && Game.cave.cave.kind === 'lost';
+function genLostLayout(cv, rng) {
+  const w = 72, h = 72, N = w * h, idx = (x, y) => y * w + x;
+  const m = { w, h, ground: new Uint8Array(N).fill(T.HASH), obj: new Uint8Array(N), hb: new Uint8Array(N), flow: new Int8Array(N), zone: new Uint8Array(N), chests: [], hell: true, lost: true, ore: new Uint8Array(N), theme: 10, goblinSpots: [], merchantSpots: [] };
+  const ax = 14, ay = 16;
+  for (let k = 0; k < 7; k++) {
+    const cx = 8 + ((rng() * (w - 16)) | 0), cy = 10 + ((rng() * (h - 20)) | 0), rad = 3 + ((rng() * 3) | 0);
+    for (let y = cy - rad; y <= cy + rad; y++) for (let x = cx - rad; x <= cx + rad; x++) {
+      if (x < 3 || y < 3 || x >= w - 3 || y >= h - 3) continue;
+      if ((x - cx) ** 2 + (y - cy) ** 2 <= rad * rad) m.ground[idx(x, y)] = T.HLAVA;
+    }
+  }
+  for (let y = ay + 8; y <= ay + 16; y++) for (let x = ax - 5; x <= ax + 7; x++) if (x > 2 && y < h - 3) m.ground[idx(x, y)] = T.HLAVA;
+  for (let y = ay - 5; y <= ay + 6; y++) for (let x = ax - 5; x <= ax + 6; x++) if (Math.hypot(x - ax, y - ay) <= 5.2) m.ground[idx(x, y)] = T.HOBS;
+  m.ground[idx(ax, ay + 7)] = T.HBRIDGE;
+  m.ent = { x: ax, y: ay };
+  m.goblinSpots.push({ x: ax + 3, y: ay + 1 }, { x: ax - 3, y: ay + 2 }, { x: 40, y: 28 }, { x: 52, y: 44 });
+  for (let n = 0; n < 40; n++) {
+    const x = 4 + ((rng() * (w - 8)) | 0), y = 4 + ((rng() * (h - 8)) | 0), g = m.ground[idx(x, y)];
+    if (HELL_FLOOR[g] && g !== T.HBRIDGE && !m.obj[idx(x, y)] && Math.hypot(x - ax, y - ay) > 6) m.obj[idx(x, y)] = O.BURNT;
+  }
+  for (let n = 0; n < 6; n++) {
+    let x = 8 + ((rng() * (w - 16)) | 0), y = 8 + ((rng() * (h - 16)) | 0);
+    if (!HELL_FLOOR[m.ground[idx(x, y)]] || m.ground[idx(x, y)] === T.HBRIDGE) { x = ax + 2 + n; y = ay - 2; m.ground[idx(x, y)] = T.HOBS; }
+    m.merchantSpots.push({ x, y });
+  }
+  return m;
+}
+const LOST_MERCHANT_NAMES = ['Kharon', 'Vesper', 'Moth', 'Nyx', 'Shade', 'Wail'];
+function enterLost(direct, pos) {
+  const go = () => {
+    const p = Game.p;
+    if (inHell()) { try { Game.hellExplored = packBits(Game.cave.explored); } catch (e) { /* keep the previous map */ } Game.hellReturn = { x: p.x, y: p.y }; }
+    const cv = { id: 'lostsouls', kind: 'lost', tx: 0, ty: 0, biome: BIO.VOLCANO, theme: 10, boss: null, lvl: 12, name: 'The Land of the Lost Souls' };
+    Game.mode = 'cave'; Game.cave = genCave(cv, (Game.world.seed ^ 0x1057) >>> 0); const C = Game.cave;
+    Game.enemies = []; Game.shots = []; Game.pickups = []; Game.hazards = []; Game.boss = null; Game.portal = null; p.goto = null; p.ride = false; UI.hideBoss();
+    for (const s of C.goblinSpots || []) { const e = makeEnemy('godgoblin', s.x * 16 + 8, s.y * 16 + 12, 1); e.aggro = false; if (!boxHit(C, e.x, e.y, e.hw, e.hh, true)) Game.enemies.push(e); }
+    C.hnpcs = [];
+    (C.merchantSpots || []).forEach((s, i) => {
+      const n = { kind: 'npc', hell: 1, soul: 1, role: 'soulmerchant', name: LOST_MERCHANT_NAMES[i % LOST_MERCHANT_NAMES.length], look: { skin: '#d8c0a8', shirt: '#2e1c40', robe: 1, hat: 'hood', hood: '#2e1c40', glow: '#7af0ff' }, x: s.x * 16 + 8, y: s.y * 16 + 12, dir: 'down', moving: false, walkT: 0, hw: 4, hh: 4, path: null, waitT: 2 + i, bubbleT: 0, bubbleCd: 6, spd: 28, t: i, lavaOk: true, home: { x: s.x, y: s.y }, v: { name: 'Wandering Merchant' } };
+      n.portrait = () => ({ s: sprSoulMerchant(0), top: 2 });
+      C.hnpcs.push(n);
+    });
+    if (pos && !boxHit(C, pos.x, pos.y, p.hw, p.hh, true)) { p.x = pos.x; p.y = pos.y; } else { p.x = C.ent.x * 16 + 8; p.y = (C.ent.y + 1) * 16 + 10; }
+    p.dir = 'down'; snapCam(); Game.state = 'play'; Game.spawnT = 2;
+    if (!direct) UI.banner('👻 The Land of the Lost Souls', 'God Goblins walk the lava. Press R to mount one.');
+    saveGame();
+  };
+  if (direct) go(); else { SFX.play('portal'); const f = $('fade'); f.classList.add('hell'); transition(() => { f.classList.remove('hell'); go(); }); }
+}
+function leaveLost() {
+  const back = Game.hellReturn;
+  SFX.play('portal');
+  const f = $('fade'); f.classList.add('hell');
+  transition(() => { f.classList.remove('hell'); Game.p.ride = false; enterHell(true, back); });
+}
+function nearestFloor(m, x, y) {
+  const tx = Math.floor(x / 16), ty = Math.floor(y / 16);
+  for (let r = 1; r <= 8; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+    const nx = tx + dx, ny = ty + dy; if (nx < 2 || ny < 2 || nx >= m.w - 2 || ny >= m.h - 2) continue;
+    const g = m.ground[ny * m.w + nx];
+    if (HELL_FLOOR[g] && g !== T.HLAVA && !SOLID_O[m.obj[ny * m.w + nx]]) return { x: nx * 16 + 8, y: ny * 16 + 12 };
+  }
+  return null;
+}
+function toggleMount() {
+  const p = Game.p; if (!p || Game.state !== 'play') return;
+  if (p.ride) {
+    const m = curMap(); const g = m.ground[Math.floor(p.y / 16) * m.w + Math.floor(p.x / 16)];
+    let x = p.x + 16, y = p.y;
+    if (g === T.HLAVA || g === T.LAVA || g === T.CLAVA) { const spot = nearestFloor(m, p.x, p.y); if (!spot) { UI.toast('Dismount on solid ground, not in the lava.', 'warn'); return; } x = spot.x; y = spot.y; }
+    p.ride = false; const e = makeEnemy('godgoblin', x, y, 1); e.aggro = false; if (!boxHit(m, e.x, e.y, e.hw, e.hh, true)) Game.enemies.push(e);
+    SFX.play('ui'); UI.toast('You dismount.', ''); return;
+  }
+  if (!inLost()) { UI.toast('God Goblins live in the Land of the Lost Souls.', 'warn'); return; }
+  let best = null, bd = 36;
+  for (const e of Game.enemies) { if (e.type !== 'godgoblin' || e.dead) continue; const d = Math.hypot(e.x - p.x, e.y - p.y); if (d < bd) { bd = d; best = e; } }
+  if (!best) { UI.toast('No God Goblin close enough. Walk up to one and press R.', 'warn'); return; }
+  best.dead = true; p.ride = true; SFX.play('dash'); UI.toast('You mount the God Goblin. Lava cannot burn you. R dismounts.', 'gold');
+}
+function lostSpawnTick() {
+  const C = Game.cave, p = Game.p; Game.spawnT = 1.4;
+  Game.enemies = Game.enemies.filter(e => e.type === 'godgoblin' || Math.hypot(e.x - p.x, e.y - p.y) < 30 * 16);
+  const alive = Game.enemies.filter(e => e.type !== 'godgoblin').length;
+  if (alive >= 12) return;
+  for (let tries = 0; tries < 12; tries++) {
+    const a = rr(0, 6.283), dd = rr(11, 18) * 16; const tx = Math.floor((p.x + Math.cos(a) * dd) / 16), ty = Math.floor((p.y + Math.sin(a) * dd) / 16);
+    if (tx < 3 || ty < 3 || tx >= C.w - 3 || ty >= C.h - 3) continue;
+    const i = ty * C.w + tx, g = C.ground[i];
+    if (g === T.HLAVA || !HELL_FLOOR[g] || C.obj[i] || nearLight(C, tx, ty, 4)) continue;
+    const roll = Math.random();
+    const type = roll < 0.34 ? 'hzombie' : roll < 0.62 ? 'fspirit' : roll < 0.78 ? 'godgoblin' : 'himp';
+    const e = makeEnemy(type, tx * 16 + 8, ty * 16 + 12, 3);
+    if (type === 'hzombie') { e.rise = 1.6; e.look = Math.random() < 0.5 ? LOOKS.hellzombie : LOOKS.hellzombie2; e.ghost = true; }
+    if (type === 'godgoblin') e.aggro = false;
+    if (!boxHit(C, e.x, e.y, e.hw, e.hh, e.lavaOk)) { Game.enemies.push(e); break; }
+  }
+}
+function lostTick(dt) {
+  const C = Game.cave, p = Game.p;
+  const g = C.ground[clamp(Math.floor((p.y - 2) / 16), 0, C.h - 1) * C.w + clamp(Math.floor(p.x / 16), 0, C.w - 1)];
+  const safe = !!p.ride || !!Game.specials.csizma || pFireproof();
+  if (g === T.HLAVA && p.hp > 0 && !safe) {
+    p.lavaT = (p.lavaT || 0) - dt;
+    if (p.lavaT <= 0) { p.lavaT = 0.4; burnHit(Math.max(6, Math.round(pMaxHp(p) * 0.06)), true); }
+  }
+  for (const n of C.hnpcs || []) {
+    n.t = (n.t || 0) + dt; n.waitT = (n.waitT || 0) - dt;
+    if (n.waitT > 0) { n.moving = false; continue; }
+    if (!n.goal || Math.hypot(n.goal.x - n.x, n.goal.y - n.y) < 6) { const a = rr(0, 6.283), r = rr(16, 48); n.goal = { x: n.home.x * 16 + Math.cos(a) * r, y: n.home.y * 16 + Math.sin(a) * r }; n.waitT = rr(1.5, 4); }
+    const dx = n.goal.x - n.x, dy = n.goal.y - n.y, d = Math.hypot(dx, dy) || 1;
+    moveEnt(n, dx / d * n.spd * dt, dy / d * n.spd * dt, C); n.moving = true; n.dir = dirTo(dx, dy); n.walkT = (n.walkT || 0) + dt;
+  }
+}
 
 // ---- per-frame Hell logic: lava burns, burning status, vents, biome banners ----
 function hellTick(dt) {
   const C = Game.cave, p = Game.p; const g = C.ground[clamp(Math.floor((p.y - 2) / 16), 0, C.h - 1) * C.w + clamp(Math.floor(p.x / 16), 0, C.w - 1)];
-  const boots = !!Game.specials.csizma || pFireproof(); p.slowK = 1;
+  const boots = !!Game.specials.csizma || pFireproof() || !!p.ride; p.slowK = 1;
   if (g === T.HLAVA && p.hp > 0) {
     if (!boots) { p.slowK = 0.55; p.lavaT = (p.lavaT || 0) - dt; if (p.lavaT <= 0) { p.lavaT = 0.4; burnHit(Math.max(6, Math.round(pMaxHp(p) * 0.06)), true); p.burn = Math.max(p.burn || 0, 1.6); if (!Game.lavaHint) { Game.lavaHint = 1; UI.toast('🔥 Lava burns! Lava Boots let you cross it unharmed.', 'warn'); } } }
     if (Math.random() < 0.5) addPart(p.x + rr(-5, 5), p.y, rr(-15, 15), rr(-50, -20), 0.5, pick(['#ff6a1a', '#ffd060']), 2);
@@ -4786,7 +4929,7 @@ function gainSouls(n, x, y, big) {
   const fx = Game.soulFx || (Game.soulFx = []); for (let i = 0; i < Math.min(10, 2 + n); i++) fx.push({ x: x + rr(-8, 8), y: y + rr(-6, 6), vx: rr(-70, 70), vy: rr(-90, -20), t: 0 });
   if (!Game.soulHint) { Game.soulHint = 1; setTimeout(() => UI.toast('👻 You gathered a soul! Kharon, the wandering Soul Merchant, trades hell ore for the souls of the creatures you defeat.', 'quest'), 900); }
 }
-function hellSoulKill(e) { if (e.boss || !inHell()) return; const v = SOUL_VALUE[e.type]; if (!v) return; gainSouls(e.minion ? 1 : v + Math.max(0, (e.lvl || 1) - 1), e.x, e.y - (e.hgt || 16)); }
+function hellSoulKill(e) { if (e.boss || !(inHell() || inLost())) return; const v = SOUL_VALUE[e.type]; if (!v) return; gainSouls(e.minion ? 1 : v + Math.max(0, (e.lvl || 1) - 1), e.x, e.y - (e.hgt || 16)); }
 function soulBuy(i, cnt) {
   const it = SOUL_SHOP[i]; if (!it) return false;
   if (it.gear) { const t = ti(it.gear, it.m), p = Game.p; if (p[it.gear] >= t) { nag('You already have this weapon, or a better one!'); return false; } if ((Game.souls || 0) < it.p) { nag('Not enough souls! Defeat more creatures of Hell.'); SFX.play('hurt'); return false; }
@@ -4946,7 +5089,7 @@ function render() {
     else if (o === O.PTORCH) { G.fillStyle = 'rgba(0,0,0,0.3)'; ell(x * 16 + 8, y * 16 + 14, 4, 1.5); G.fillStyle = '#6a4424'; G.fillRect(x * 16 + 7, y * 16 + 6, 2, 8); drawFlame(x * 16 + 8, y * 16 + 6, t + x * 0.7); lights.push([x * 16 + 8, y * 16 + 4, 100 + Math.sin(t * 8 + x) * 4, 1]); }
   }
   if (m.kind === 'over') { for (const it of m.items) { if (it.back > Game.time || it.x < x0 || it.x > x1 || it.y < y0 || it.y > y1) continue; G.save(); G.translate(it.x * 16 + 8, it.y * 16 + 13); drawItemSprite(it.type, t + it.x); G.restore(); } }
-  else { if (Game.portal) { if (Game.portal.kind === 'hell') { drawHellPortal(Game.portal.x, Game.portal.y, t, Game.portal.born); lights.push([Game.portal.x, Game.portal.y - 8, 120, 1]); } else drawPortal(Game.portal.x, Game.portal.y, t); lights.push([Game.portal.x, Game.portal.y, 60, 1]); } if (m.hell) { drawDimPortal(m.ent.x * 16 + 8, m.ent.y * 16 + 12, t); lights.push([m.ent.x * 16 + 8, m.ent.y * 16, 110, 1, 'g']); } else lights.push([m.ent.x * 16 + 8, m.ent.y * 16 + 8, 46, 0.8]); if (m.altar && m.cave.core && !Game.coreTaken[m.cave.id]) lights.push([m.altar.x * 16 + 8, m.altar.y * 16 - 8, 70, 0.9]); }
+  else { if (Game.portal) { if (Game.portal.kind === 'hell') { drawHellPortal(Game.portal.x, Game.portal.y, t, Game.portal.born); lights.push([Game.portal.x, Game.portal.y - 8, 120, 1]); } else drawPortal(Game.portal.x, Game.portal.y, t); lights.push([Game.portal.x, Game.portal.y, 60, 1]); } if (m.lostGate) { drawDimPortal(m.lostGate.x * 16 + 8, m.lostGate.y * 16 + 6, t); lights.push([m.lostGate.x * 16 + 8, m.lostGate.y * 16, 110, 1, 'g']); } if (m.cave && m.cave.kind === 'lost') { drawHellPortal(m.ent.x * 16 + 8, m.ent.y * 16 + 10, t); lights.push([m.ent.x * 16 + 8, m.ent.y * 16, 90, 1]); } else if (!m.hell && !m.lostGate) lights.push([m.ent.x * 16 + 8, m.ent.y * 16 + 8, 46, 0.8]); if (m.altar && m.cave.core && !Game.coreTaken[m.cave.id]) lights.push([m.altar.x * 16 + 8, m.altar.y * 16 - 8, 70, 0.9]); }
   drawHazards();
   for (const k2 of Game.pickups) drawPickup(k2, t);
   // y-sorted
@@ -5053,7 +5196,7 @@ function drawObj(o, tx, ty, m) {
   G.drawImage(arr[(hash2(tx, ty, 13) * arr.length) | 0], tx * 16 + 8 - a[0] + ox, (ty + 1) * 16 - a[1]);
   if (dm && Game.time - dm.t < 25 && dm.hp < dm.max) { const w = 12, x = tx * 16 + 2, y = ty * 16 + 1; G.fillStyle = 'rgba(0,0,0,0.6)'; G.fillRect(x - 1, y - 1, w + 2, 4); G.fillStyle = '#ffd84a'; G.fillRect(x, y, Math.round(w * dm.hp / dm.max), 2); }
 }
-const ENEMY_LOOK = { goblin: 'goblin', goblinArcher: 'goblin', skeleton: 'skeleton', skelArcher: 'skeleton', mummy: 'mummy', sporeling: 'sporeling', witch: 'witch' };
+const ENEMY_LOOK = { goblin: 'goblin', goblinArcher: 'goblin', godgoblin: 'godgoblin', skeleton: 'skeleton', skelArcher: 'skeleton', mummy: 'mummy', sporeling: 'sporeling', witch: 'witch' };
 const BOSS_LOOK = { goblinChief: 'goblinChief', frostWarden: 'frostWarden', pharaoh: 'pharaoh', rotWitch: 'witch' };
 const ENEMY_WEAPON = { goblin: ['club', '#8a5a2c'], goblinArcher: ['bow', 'fa'], skeleton: ['sword', 'vas'], skelArcher: ['bow', 'fa'], witch: ['staff', '#a0ff60'] };
 const BOSS_WEAPON = { goblinChief: ['club', '#6a4a2a'], frostWarden: ['sword', 'gyemant'], pharaoh: ['staff', '#f0d060'], rotWitch: ['staff', '#a0ff60'] };
@@ -5085,7 +5228,7 @@ function entityVisual(e) {
     const dir = near || sw >= 0 ? dirTo(dx, dy) : e.moving ? dirTo(e.face < 0 ? -1 : 1, 0) : dirTo(dx, dy); const pose = sw >= 0 ? 'attack' : e.moving || e.chargeT > 0 ? 'walk' : 'idle'; const f = pose === 'walk' ? Math.floor(t * (e.chargeT > 0 ? 16 : 7)) % 4 : Math.floor(t * 1.3) % 2;
     return { s: hspr(kn ? LOOKS.hknight : LOOKS.reaper, dir, pose, f), sc, weapon: kn ? ['sword', 'pokol'] : ['scythe', '#c8c8d0'], dir, near: sw >= 0, swingP: sw, fly: kn ? 0 : 3 + Math.sin(t * 2.2) * 2 };
   }
-  if (e.type === 'zombie') {
+  if (e.type === 'zombie' || e.type === 'hzombie') {
     const dir = e.aggro && p ? dirTo(p.x - e.x, p.y - e.y) : e.moving ? dirTo(e.face < 0 ? -1 : 1, 0) : 'down'; const f = e.moving || e.lungeT > 0 ? Math.floor(t * (e.lungeT > 0 ? 12 : 5)) % 4 : 0;
     return { s: hspr(e.look, dir, 'zwalk', f), sc, rise: e.rise > 0 ? e.rise / 1.2 : 0 };
   }
@@ -5093,6 +5236,7 @@ function entityVisual(e) {
     case 'demon': { const pose = e.pose || (e.moving ? 'walk' : 'idle'); return { s: sprDemon(pose, pose === 'walk' ? Math.floor(t * 8) % 4 : 0), sc, lift: e.lift || 0, flip: (p ? p.x < e.x : e.face < 0) }; }
     case 'himp': return { s: sprHellImp(Math.floor(t * 14) % 3), sc, fly: 8 + Math.sin(t * 6) * 2, flip: e.face < 0 };
     case 'flamer': return { s: sprFlamer(Math.floor(t * 9) % 3), sc: (e.castT > 0 || e.novaT > 0) ? sc * (1.1 + Math.sin(t * 30) * 0.05) : sc, fly: 4 + Math.sin(t * 2) * 2 };
+    case 'fspirit': return { s: sprFlamer(Math.floor(t * 12) % 3), sc: sc * 0.85, fly: 10 + Math.sin(t * 4) * 3, flip: e.face < 0 };
     case 'hound': { const crouch = e.windT > 0; const fr = crouch ? 4 : e.moving ? Math.floor(t * 14) % 4 : 4 + Math.floor(t * 2) % 2; return { s: sprWolf(fr, crouch, crouch ? '#ffffff' : '#ffcc40', true), sc, flip: e.face < 0 }; }
     case 'serpent': { if (e.sst === 'sub' || !e.sst) return { s: sprSerpent(0), sc, rise: 1, riseH: 30 }; const r = e.sst === 'rise' ? clamp(e.sT / 0.5, 0, 1) : e.sst === 'sink' ? clamp(1 - e.sT / 0.5, 0, 1) : 0; return { s: sprSerpent(Math.floor(t * 4) % 4), sc, flip: p ? p.x < e.x : false, rise: r, riseH: 30 }; }
     case 'ghost': return { s: sprGhost(Math.floor(t * 4) % 3), sc, fly: 5 + Math.sin(t * 2.4) * 2.5, flip: e.face < 0 };
@@ -5133,6 +5277,7 @@ function drawEntity(e) {
   if (e.spawnT > 0) { const k = clamp(1 - e.spawnT / 0.35, 0.05, 1); sx *= k; sy *= k; }
   if (e.kind === 'player' && p.atkT > 0) G.translate(Math.round(Math.cos(p.atkAng) * 1.5), Math.round(Math.sin(p.atkAng) * 1.5));
   if (e.windup) G.translate(Math.round(Math.sin(Game.time * 60)), 0);
+  if (e.kind === 'player' && p.ride) { const gs = hspr(LOOKS.godgoblin, p.dir, p.moving ? 'walk' : 'idle', Math.floor((p.walkT || 0) * 9) % 4); G.drawImage(gs.c, Math.round(-gs.ax), Math.round(-gs.ay + 4)); G.translate(0, -9); }
   G.translate(0, -Math.round(up));
   if (v.flip) sx = -sx;
   G.scale(sx, sy);
@@ -5455,7 +5600,7 @@ const UI = {
       b.addEventListener('contextmenu', e => e.preventDefault());
     };
     press('bAtk', () => { Input.holdAtk = true; Input.request('attack'); }, () => { Input.holdAtk = false; });
-    press('bDash', () => Input.request('dash')); press('bTalk', () => Input.request('interact'));
+    press('bDash', () => Input.request('dash')); press('bMount', () => Input.request('mount')); press('bTalk', () => Input.request('interact'));
     press('bPot', () => Input.request('potion')); press('bTorch', () => Input.request('torch'));
   },
   resetFog() { const W0 = Game.world.w, H0 = Game.world.h; if (this.fogC.width !== W0 || this.fogC.height !== H0) { this.fogC.width = W0; this.fogC.height = H0; } const g = this.fogG; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W0, H0); g.fillStyle = '#0b0a12'; g.fillRect(0, 0, W0, H0); g.globalCompositeOperation = 'destination-out'; for (let i = 0; i < Game.explored.length; i++) if (Game.explored[i]) g.fillRect(i % W0, (i / W0) | 0, 1, 1); },
@@ -5622,7 +5767,7 @@ const HELP_HTML = `<div class="help">
 <h3>⛏️ Mining and chopping</h3><ul><li>Stand next to a tree and hit — the axe comes out on its own.</li><li>Cave walls hide ore. Rarer ore needs a stronger pickaxe: Wood → coal, copper · Copper → iron · Iron → gold, emerald, sapphire · Gold → diamond, ruby · Diamond → obsidian, mithril.</li><li>The deeper you go in a cave, the rarer the ore.</li></ul>
 <h3>🔨 Craftsmen</h3><ul><li>Every village has a Craftsman. If you have the materials, they make the item <b>for free</b>.</li><li>Torches, the Lantern, the Compass, and Lava Boots come only from Craftsmen.</li><li>Every village Craftsman knows different recipes!</li></ul>
 <h3>🗺️ Special places</h3><ul><li><b>⛺ Bandit Camp</b> — tents, a campfire, a red flag. Bandits fight with iron swords, attack villagers, and sometimes raid the villages! They sometimes drop their sword. Clear the camp and the chest is yours.</li><li><b>🏛️ Ancient Temple</b> — full of slimes. Avoid the spike traps, and break <b>cracked walls</b> with a pickaxe: hidden treasure rooms with diamonds lie behind them. The sanctuary altar may hold an <b>Earth Core</b>.</li><li><b>👻 Cursed Village</b> — ghosts, and zombies climbing from their graves. You can hurt a ghost only when it is not see-through. Smash the <b>Curse Stone</b> in the middle of the village!</li><li><b>🗿 Earth Dungeon</b> — very rare (at most 3 in a world). It opens only with an Earth Core. Defeat every Earth Servant and the <b>Earth Golem</b> climbs out — the strongest boss in the game!</li></ul>
-<h3>🔥 Hell</h3><ul><li>After you defeat the Earth Golem, a flaming portal opens to Hell. Lava burns there (not if you wear Lava Boots), and the enemies are much stronger: demons, hell-imp swarms, hell knights, flame elementals, hellhounds, lava serpents, and soul reapers.</li><li>A red or orange circle on the ground means an attack is coming — step out of it! Monsters do not appear near braziers and torches.</li><li>The return portal is where you arrived. If you die, you wake up there.</li></ul>
+<h3>🔥 Hell</h3><ul><li>After you defeat the Earth Golem, a flaming portal opens to Hell. Lava burns there (not if you wear Lava Boots), and the enemies are much stronger: demons, hell-imp swarms, hell knights, flame elementals, hellhounds, lava serpents, and soul reapers.</li><li>A red or orange circle on the ground means an attack is coming — step out of it! Monsters do not appear near braziers and torches.</li><li>The return portal is where you arrived. If you die, you wake up there.</li><li>East of that platform, a soul gate opens <b>The Land of the Lost Souls</b>. God Goblins there are mounts: press <b class="key">R</b> (or Mount) to ride. While mounted you move faster, walk on lava, and lava does not burn you.</li></ul>
 <h3>😇 Angel Village, souls, and Satan</h3><ul><li>A paved road leads from the portal to <b>Angel Village</b>: a lava ring protects it, no demon can enter, and your wounds heal on their own. The angels will heal you too, and show you where Satan's throne is.</li><li><b>Uriel, the Angel Craftsman</b>, forges for free: Diamond Armor, plus hell gear — Hellrock and Fire Titanium swords, pickaxes, axes, and Hellrock Armor.</li><li><b>Hell caves</b> (rock domes with arched mouths): this is the only place <b>Fire Powder</b>, <b>Hellrock</b> (needs a Mithril Pickaxe), and the rarest ore in the game, <b>Fire Titanium</b> (needs a Hellrock Pickaxe), appear — Fire Titanium only in the deepest rooms.</li><li>Every enemy you defeat in Hell gives <b>souls</b> 👻 (stronger ones give more). <b>Kharon, the Soul Merchant</b>, wanders Hell — a purple mark on the map shows where — and trades ore for souls. He also sells the <b>Soul Scythe</b> (+31 attack), only a little weaker than the Fire Titanium Sword.</li><li><b>Satan</b>, Lord of Hell, waits in the lava-ringed throne room. The first victory grants the full <b>Fire Titanium armor set</b> (helm, chestplate, leggings, boots: +22 defense, and lava does not burn you). You can challenge him again at the throne, but the set is granted only once.</li></ul>
 <h3>💡 Tips</h3><ul><li>Caves are pitch black — place torches! Monsters do not spawn next to torches.</li><li>More monsters come out at night. You are safe in a village, and you heal.</li><li>A yellow <b class="gold">!</b> means a new quest. A yellow <b class="gold">?</b> means a finished quest.</li><li>Merchants buy your materials for gold.</li></ul></div>`;
 function drawPortrait(c, look, zoom, sprFn) {
@@ -6208,7 +6353,7 @@ function showTitle() {
   Game.mode = 'over'; Game.cave = null; Game.enemies = []; Game.shots = []; Game.pickups = []; Game.p = null;
   const save = loadSave(); $('btnContinue').classList.toggle('hidden', !save);
   $('saveInfo').textContent = save ? `Saved hero: level ${save.p.level} · ${save.p.gold} gold · ${(save.inv && save.inv.szilank) || 0}/5 shards` : '';
-  $('btnNew').textContent = save ? 'New world' : 'Start adventure'; $('tutBadge').hidden = !DATutorial.isDone(); $('btnNew').classList.toggle('gold', !save); $('title').classList.remove('hidden');
+  $('btnNew').textContent = save ? 'New world' : 'Start adventure'; $('btnNew').classList.toggle('gold', !save); $('title').classList.remove('hidden');
   try { TitleMenu.setSel(0, false); } catch (e) {}
 }
 function newWorld() { Game.world = genWorld((Math.random() * 1e9) | 0); spawnNpcs(); Game.worldDirty = false; }
