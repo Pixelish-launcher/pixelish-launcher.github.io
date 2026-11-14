@@ -940,7 +940,7 @@ const ANGEL_LINES = [
   'Fire Powder and Hellrock grow deep in the hell caves. Fire Titanium, if you find any, is only in the deepest tunnels.',
   'Kharon, the Soul Merchant, wanders Hell all day. He trades ore for the souls of demons you defeat.',
   'Our Craftsman forges the finest weapons from hell ore — free, if you bring the materials!',
-  'East of the gate you arrived through, a swirling soul gate opens onto the Land of the Lost Souls. God Goblins there will carry you over the lava.',
+  'On the platform where you arrived, a few steps east, a glowing soul gate opens onto the Land of the Lost Souls. It is marked on your map. God Goblins there will carry you over the lava.',
 ];
 const SOUL_LINES = [
   'Souls... every demon you fell could be mine. Yours, I mean. Then mine. Hehe.',
@@ -2865,6 +2865,7 @@ function genCave(cv, worldSeed) {
   // apply saved changes
   const diff = Game.caveDiff[cv.id];
   if (diff) { for (const i of diff.m || []) { m.ground[i] = m.hell ? hellFloorAt(m, i) : T.CFLOOR; m.ore[i] = 0; if (m.obj[i] === O.WTORCH) m.obj[i] = 0; } for (const i of diff.t || []) { if (!SOLID_G[m.ground[i]]) m.obj[i] = O.PTORCH; } }
+  if (cv.kind === 'hell') ensureLostGate(m);
   computeWK(m);
   // minimap image
   const c = mkCanvas(w, h), g = c.getContext('2d'); m.img = c; redrawCaveMini(m, 0, 0, w - 1, h - 1);
@@ -3258,6 +3259,37 @@ function genHellLayout(cv, rng) {
 }
 const hellBiomeAt = (m, x, y) => m.hb ? m.hb[clamp(Math.floor(y / 16), 0, m.h - 1) * m.w + clamp(Math.floor(x / 16), 0, m.w - 1)] : 0;
 
+// The soul gate is not stored in the save. Hell is rebuilt from the world seed, so this
+// stamps it on every visit, including saves made before the gate existed. It always sits
+// on the arrival platform, five tiles east of the return portal, and never inside a cave,
+// the village, or the arena.
+function ensureLostGate(m) {
+  if (!m || !m.hell || m.lost || !m.ent) return;
+  const w = m.w, h = m.h, idx = (x, y) => y * w + x;
+  const ax = m.ent.x, ay = m.ent.y;
+  const gx = clamp(ax + 5, 4, w - 5), gy = clamp(ay, 4, h - 5);
+  for (let y = gy - 2; y <= gy + 2; y++) for (let x = gx - 2; x <= gx + 2; x++) {
+    if (x < 3 || y < 3 || x >= w - 3 || y >= h - 3) continue;
+    if (Math.hypot(x - gx, y - gy) > 1.7) continue;
+    const i = idx(x, y);
+    m.ground[i] = T.HOBS; if (m.obj) m.obj[i] = 0; if (m.ore) m.ore[i] = 0; if (m.flow) m.flow[i] = 0;
+    if (m.zone) m.zone[i] = 0;
+  }
+  if (m.houses) m.houses = m.houses.filter(H => !(gx + 2 >= H.x && gx - 2 < H.x + (H.w || 1) && gy + 2 >= H.y && gy - 2 < H.y + (H.h || 1)));
+  m.lostGate = { x: gx, y: gy };
+  const reach = caveFlood(m, ax, ay);
+  if (reach[idx(gx, gy)] < 0) {
+    let x = gx, y = gy;
+    for (let s = 0; s < 48 && (x !== ax || y !== ay); s++) {
+      if (Math.abs(ax - x) >= Math.abs(ay - y)) x += Math.sign(ax - x); else y += Math.sign(ay - y);
+      const i = idx(x, y);
+      if (!HELL_FLOOR[m.ground[i]] || SOLID_G[m.ground[i]]) {
+        m.ground[i] = T.HGROUND; if (m.obj) m.obj[i] = 0; if (m.ore) m.ore[i] = 0; if (m.flow) m.flow[i] = 0; if (m.zone) m.zone[i] = 0;
+      } else if (m.obj && SOLID_O[m.obj[i]]) m.obj[i] = 0;
+    }
+  }
+}
+
 // ================= HELL EXPANSION: generation (Angel Village, Satan's arena, Hell caves) =================
 // Runs after the base Hell terrain with its own random stream, so older Hell maps keep their shape
 // (saved mined tiles, chests and explored areas stay valid) and only these new places are stamped in.
@@ -3372,13 +3404,10 @@ function genHellExtras(m, seed) {
   for (const [dx, dy] of D4) link(vx + dx * 15, vy + dy * 15);
   link(m.arena.gate.x, m.arena.gate.y);
   for (const c of m.hcaves) link(c.exit.x, c.exit.y);
-  const gx = clamp(ax + 22, 8, w - 9), gy = clamp(ay + 6, 8, h - 9);
-  for (let y = gy - 3; y <= gy + 3; y++) for (let x = gx - 3; x <= gx + 3; x++) { if (!inB(x, y)) continue; if (Math.hypot(x - gx, y - gy) <= 3) clearT(idx(x, y), T.HOBS); }
-  m.lostGate = { x: gx, y: gy };
-  link(gx, gy);
   // a paved road from the arrival platform to the nearest village gate
   { const fl = caveFlood(m, ax, ay); let g0 = null, gd = 1e9; for (const [dx, dy] of D4) { const x = vx + dx * 15, y = vy + dy * 15, d = fl[idx(x, y)]; if (d >= 0 && d < gd) { gd = d; g0 = { x, y }; } }
     if (g0) { let x = g0.x, y = g0.y; for (let s = 0; s < 400; s++) { const i = idx(x, y); if (Math.hypot(x - ax, y - ay) < 7) break; if (m.ground[i] !== T.HBRIDGE && m.zone[i] === 0) { if (m.obj[i] !== O.CHEST) { m.ground[i] = T.HPATH; m.obj[i] = 0; } } let nb = -1, nd = fl[i]; for (const [dx, dy] of D4) { const j = idx(x + dx, y + dy); if (fl[j] >= 0 && fl[j] < nd) { nd = fl[j]; nb = j; } } if (nb < 0) break; x = nb % w; y = (nb / w) | 0; } } }
+  ensureLostGate(m);
   return m;
 }
 // which special place a world position is in: 0 open Hell, 1 village, 2 arena, >=10 Hell cave (10 + index)
@@ -4556,11 +4585,15 @@ function enterDimension() {
 }
 function drawDimPortal(x, y, t, born) {
   const k = born !== undefined ? clamp((Game.time - born) / 1.2, 0, 1) : 1; if (k <= 0) return;
-  G.save(); G.translate(x, y); G.scale(k, k);
-  const g = G.createRadialGradient(0, -6, 2, 0, -6, 26); g.addColorStop(0, 'rgba(255,240,180,0.9)'); g.addColorStop(0.4, 'rgba(120,220,140,0.55)'); g.addColorStop(1, 'rgba(80,160,255,0)'); G.fillStyle = g; G.beginPath(); G.ellipse(0, -6, 26, 30, 0, 0, 7); G.fill();
-  for (let i = 0; i < 4; i++) { G.strokeStyle = ['#ffb030', '#7ae070', '#70c0ff', '#ffffff'][i]; G.lineWidth = 2; G.beginPath(); const a0 = t * (2 + i * 0.6) + i; G.ellipse(0, -6, 16 - i * 3 + Math.sin(t * 3 + i) * 1.5, 22 - i * 4 + Math.sin(t * 3 + i) * 1.5, 0, a0, a0 + 4.6); G.stroke(); }
+  G.save(); G.translate(Math.round(x), Math.round(y)); G.scale(k, k);
+  G.fillStyle = 'rgba(18,8,32,0.85)'; G.beginPath(); G.ellipse(0, 2, 13, 6, 0, 0, 7); G.fill();
+  for (let i = 0; i < 18; i++) { const a = i / 18 * 6.283 + t * 0.6; G.fillStyle = i % 2 ? '#ffffff' : '#7af0ff'; G.fillRect(Math.round(Math.cos(a) * 11) - 1, Math.round(2 + Math.sin(a) * 5) - 1, 3, 3); }
+  G.fillStyle = 'rgba(122,240,255,0.45)'; G.fillRect(-7, -32, 14, 32);
+  G.fillStyle = 'rgba(255,255,255,0.9)'; G.fillRect(-2, -30, 4, 28);
+  for (let i = 0; i < 3; i++) { G.strokeStyle = ['#ffffff', '#7af0ff', '#d0a0ff'][i]; G.lineWidth = 2; G.beginPath(); const a0 = t * (2.4 + i * 0.5) + i; G.ellipse(0, -14, 9 - i * 2, 13 - i * 2, 0, a0, a0 + 4.2); G.stroke(); }
+  G.fillStyle = '#ffffff'; G.fillRect(-2, -16, 4, 4);
   G.restore();
-  for (let i = 0; i < 2; i++) { const a = rr(0, 6.283); addPart(x + Math.cos(a) * 22, y - 6 + Math.sin(a) * 26, -Math.cos(a) * 25, -Math.sin(a) * 25 - 10, 0.7, pick(['#ffe080', '#9cf0a0', '#9cd8ff']), 1.5); }
+  if (Math.random() < 0.85) { const a = rr(0, 6.283); addPart(x + Math.cos(a) * 12, y - 12 + Math.sin(a) * 8, rr(-8, 8), rr(-48, -12), 0.75, pick(['#ffffff', '#7af0ff', '#e0b0ff']), 2); }
 }
 
 // ================= HELL DIMENSION: gameplay =================
@@ -4580,6 +4613,8 @@ function enterHell(direct, pos) {
     if (Game.mode === 'over') Game.overPos = { x: p.x, y: p.y }; if (!Game.overPos) { const v = villageById(Game.lastVillage) || Game.world.start; Game.overPos = { x: v.cx * 16 + 8, y: (v.cy + 3) * 16 + 10 }; }
     Game.mode = 'cave'; Game.cave = genCave(D.cv, (Game.world.seed ^ 0x4e11) >>> 0); const C = Game.cave; hellPlusEnter(C);
     if (Game.hellExplored) { const ex = unpackBits(Game.hellExplored, C.w * C.h); C.explored.set(ex); }
+    ensureLostGate(C);
+    if (C.lostGate && C.img) redrawCaveMini(C, C.lostGate.x - 3, C.lostGate.y - 3, C.lostGate.x + 3, C.lostGate.y + 3);
     Game.enemies = []; Game.shots = []; Game.pickups = []; Game.hazards = []; Game.boss = null; Game.portal = null; p.goto = null; UI.hideBoss();
     if (pos && !boxHit(C, pos.x, pos.y, p.hw, p.hh)) { p.x = pos.x; p.y = pos.y; } else { p.x = C.ent.x * 16 + 8; p.y = (C.ent.y + 2) * 16 + 10; }
     p.dir = 'down'; snapCam(); Game.state = 'play'; Game.hellBiome = -1; Game.spawnT = 3;
@@ -5086,7 +5121,7 @@ function render() {
     else if (o === O.PTORCH) { G.fillStyle = 'rgba(0,0,0,0.3)'; ell(x * 16 + 8, y * 16 + 14, 4, 1.5); G.fillStyle = '#6a4424'; G.fillRect(x * 16 + 7, y * 16 + 6, 2, 8); drawFlame(x * 16 + 8, y * 16 + 6, t + x * 0.7); lights.push([x * 16 + 8, y * 16 + 4, 100 + Math.sin(t * 8 + x) * 4, 1]); }
   }
   if (m.kind === 'over') { for (const it of m.items) { if (it.back > Game.time || it.x < x0 || it.x > x1 || it.y < y0 || it.y > y1) continue; G.save(); G.translate(it.x * 16 + 8, it.y * 16 + 13); drawItemSprite(it.type, t + it.x); G.restore(); } }
-  else { if (Game.portal) { if (Game.portal.kind === 'hell') { drawHellPortal(Game.portal.x, Game.portal.y, t, Game.portal.born); lights.push([Game.portal.x, Game.portal.y - 8, 120, 1]); } else drawPortal(Game.portal.x, Game.portal.y, t); lights.push([Game.portal.x, Game.portal.y, 60, 1]); } if (m.lostGate) { drawDimPortal(m.lostGate.x * 16 + 8, m.lostGate.y * 16 + 6, t); lights.push([m.lostGate.x * 16 + 8, m.lostGate.y * 16, 110, 1, 'g']); } if (m.cave && m.cave.kind === 'lost') { drawHellPortal(m.ent.x * 16 + 8, m.ent.y * 16 + 10, t); lights.push([m.ent.x * 16 + 8, m.ent.y * 16, 90, 1]); } else if (!m.hell && !m.lostGate) lights.push([m.ent.x * 16 + 8, m.ent.y * 16 + 8, 46, 0.8]); if (m.altar && m.cave.core && !Game.coreTaken[m.cave.id]) lights.push([m.altar.x * 16 + 8, m.altar.y * 16 - 8, 70, 0.9]); }
+  else { if (Game.portal) { if (Game.portal.kind === 'hell') { drawHellPortal(Game.portal.x, Game.portal.y, t, Game.portal.born); lights.push([Game.portal.x, Game.portal.y - 8, 120, 1]); } else drawPortal(Game.portal.x, Game.portal.y, t); lights.push([Game.portal.x, Game.portal.y, 60, 1]); } if (m.lostGate) { drawDimPortal(m.lostGate.x * 16 + 8, m.lostGate.y * 16 + 4, t); lights.push([m.lostGate.x * 16 + 8, m.lostGate.y * 16 - 16, 170, 1, 'soul']); lights.push([m.lostGate.x * 16 + 8, m.lostGate.y * 16, 120, 1, 'g']); } if (m.cave && m.cave.kind === 'lost') { drawHellPortal(m.ent.x * 16 + 8, m.ent.y * 16 + 10, t); lights.push([m.ent.x * 16 + 8, m.ent.y * 16, 90, 1]); } else if (!m.hell && !m.lostGate) lights.push([m.ent.x * 16 + 8, m.ent.y * 16 + 8, 46, 0.8]); if (m.altar && m.cave.core && !Game.coreTaken[m.cave.id]) lights.push([m.altar.x * 16 + 8, m.altar.y * 16 - 8, 70, 0.9]); }
   drawHazards();
   for (const k2 of Game.pickups) drawPickup(k2, t);
   // y-sorted
@@ -5683,7 +5718,7 @@ const UI = {
       const sp = Object.keys(SPECIALS).filter(k => Game.specials[k]); html += `<h3>Special items</h3>` + (sp.length || p.hearts ? '<div class="gear">' + sp.map(k => `<div class="gearrow"><span class="slotf">${ico('sp_' + k)}</span><div><b>${SPECIALS[k].n}</b><br><span class="muted">${SPECIALS[k].desc}</span></div></div>`).join('') + (p.hearts ? `<div class="gearrow"><span class="slotf">${ico('heart')}</span><div><b>Heart Crystal ×${p.hearts}</b><br><span class="muted">+${p.hearts * 20} max health</span></div></div>` : '') + '</div>' : '<p class="muted small">None yet. Craftsmen make these (Lantern, Compass, Lava Boots...).</p>');
       html += `<h3>Supplies</h3><div class="items"><button class="item pbtn" data-a="potion">${ico('potion')} Potion ×${p.potions} <span class="muted small">(drink)</span></button><div class="item inset">${ico('torch')} Torch ×${p.torches}</div></div>`;
       const keys = RES_ORDER.filter(k => Game.inv[k] > 0); html += '<h3>Materials</h3>' + (keys.length ? '<div class="resgrid">' + keys.map(k => `<div class="res inset">${ico('r_' + k)}<span>${RES[k].n}</span><b>${Game.inv[k]}</b></div>`).join('') + '</div>' : '<p class="muted small">Chop wood, mine ore, and gather flowers and mushrooms!</p>');
-    } else if (kind === 'map') { title = iconImg('ui_map', 26) + (Game.mode === 'over' ? 'World map' : esc(Game.cave.cave.name)); html = '<canvas id="bigmap"></canvas>' + (Game.mode !== 'over' ? (inHell() ? '<p class="muted small center">🟢 return portal · 😇 Angel Village · 😈 Satan\'s throne · ⛏️ hell cave · 🟣 Soul Merchant · 🟧 lava · black = unexplored</p>' : '') : '<p class="muted small center">💀 ancient cave · 🟡 cave · 🟥 village · ⛺ bandit camp · 🏛️ ancient temple · 👻 cursed village · 🗿 Earth Dungeon · ⭐ quest target</p>'); }
+    } else if (kind === 'map') { title = iconImg('ui_map', 26) + (Game.mode === 'over' ? 'World map' : esc(Game.cave.cave.name)); html = '<canvas id="bigmap"></canvas>' + (Game.mode !== 'over' ? (inHell() ? '<p class="muted small center">🟢 return portal · 💠 soul gate · 😇 Angel Village · 😈 Satan\'s throne · ⛏️ hell cave · 🟣 Soul Merchant · 🟧 lava · black = unexplored</p>' : '') : '<p class="muted small center">💀 ancient cave · 🟡 cave · 🟥 village · ⛺ bandit camp · 🏛️ ancient temple · 👻 cursed village · 🗿 Earth Dungeon · ⭐ quest target</p>'); }
     else if (kind === 'menu') {
       title = iconImg('ui_gear', 26) + 'Menu';
       const who = window.DAAccount && window.__DA_USER ? `<p class="muted small center">Signed in as <b class="gold">${esc(window.__DA_USER)}</b></p>${window.__DA_OFFLINE ? '<p class="muted small center">Offline</p>' : ''}` : '';
@@ -5764,7 +5799,7 @@ const HELP_HTML = `<div class="help">
 <h3>⛏️ Mining and chopping</h3><ul><li>Stand next to a tree and hit — the axe comes out on its own.</li><li>Cave walls hide ore. Rarer ore needs a stronger pickaxe: Wood → coal, copper · Copper → iron · Iron → gold, emerald, sapphire · Gold → diamond, ruby · Diamond → obsidian, mithril.</li><li>The deeper you go in a cave, the rarer the ore.</li></ul>
 <h3>🔨 Craftsmen</h3><ul><li>Every village has a Craftsman. If you have the materials, they make the item <b>for free</b>.</li><li>Torches, the Lantern, the Compass, and Lava Boots come only from Craftsmen.</li><li>Every village Craftsman knows different recipes!</li></ul>
 <h3>🗺️ Special places</h3><ul><li><b>⛺ Bandit Camp</b> — tents, a campfire, a red flag. Bandits fight with iron swords, attack villagers, and sometimes raid the villages! They sometimes drop their sword. Clear the camp and the chest is yours.</li><li><b>🏛️ Ancient Temple</b> — full of slimes. Avoid the spike traps, and break <b>cracked walls</b> with a pickaxe: hidden treasure rooms with diamonds lie behind them. The sanctuary altar may hold an <b>Earth Core</b>.</li><li><b>👻 Cursed Village</b> — ghosts, and zombies climbing from their graves. You can hurt a ghost only when it is not see-through. Smash the <b>Curse Stone</b> in the middle of the village!</li><li><b>🗿 Earth Dungeon</b> — very rare (at most 3 in a world). It opens only with an Earth Core. Defeat every Earth Servant and the <b>Earth Golem</b> climbs out — the strongest boss in the game!</li></ul>
-<h3>🔥 Hell</h3><ul><li>After you defeat the Earth Golem, a flaming portal opens to Hell. Lava burns there (not if you wear Lava Boots), and the enemies are much stronger: demons, hell-imp swarms, hell knights, flame elementals, hellhounds, lava serpents, and soul reapers.</li><li>A red or orange circle on the ground means an attack is coming — step out of it! Monsters do not appear near braziers and torches.</li><li>The return portal is where you arrived. If you die, you wake up there.</li><li>East of that platform, a soul gate opens <b>The Land of the Lost Souls</b>. God Goblins there are mounts: press <b class="key">R</b> (or Mount) to ride. While mounted you move faster, walk on lava, and lava does not burn you.</li></ul>
+<h3>🔥 Hell</h3><ul><li>After you defeat the Earth Golem, a flaming portal opens to Hell. Lava burns there (not if you wear Lava Boots), and the enemies are much stronger: demons, hell-imp swarms, hell knights, flame elementals, hellhounds, lava serpents, and soul reapers.</li><li>A red or orange circle on the ground means an attack is coming — step out of it! Monsters do not appear near braziers and torches.</li><li>The return portal is where you arrived. If you die, you wake up there.</li><li>On the arrival platform, a few steps east of where you appear, a glowing soul gate opens <b>The Land of the Lost Souls</b>. It is always there, and the map marks it with a cyan dot even before you walk up to it. God Goblins there are mounts: press <b class="key">R</b> (or Mount) to ride. While mounted you move faster, walk on lava, and lava does not burn you.</li></ul>
 <h3>😇 Angel Village, souls, and Satan</h3><ul><li>A paved road leads from the portal to <b>Angel Village</b>: a lava ring protects it, no demon can enter, and your wounds heal on their own. The angels will heal you too, and show you where Satan's throne is.</li><li><b>Uriel, the Angel Craftsman</b>, forges for free: Diamond Armor, plus hell gear — Hellrock and Fire Titanium swords, pickaxes, axes, and Hellrock Armor.</li><li><b>Hell caves</b> (rock domes with arched mouths): this is the only place <b>Fire Powder</b>, <b>Hellrock</b> (needs a Mithril Pickaxe), and the rarest ore in the game, <b>Fire Titanium</b> (needs a Hellrock Pickaxe), appear — Fire Titanium only in the deepest rooms.</li><li>Every enemy you defeat in Hell gives <b>souls</b> 👻 (stronger ones give more). <b>Kharon, the Soul Merchant</b>, wanders Hell — a purple mark on the map shows where — and trades ore for souls. He also sells the <b>Soul Scythe</b> (+31 attack), only a little weaker than the Fire Titanium Sword.</li><li><b>Satan</b>, Lord of Hell, waits in the lava-ringed throne room. The first victory grants the full <b>Fire Titanium armor set</b> (helm, chestplate, leggings, boots: +22 defense, and lava does not burn you). You can challenge him again at the throne, but the set is granted only once.</li></ul>
 <h3>💡 Tips</h3><ul><li>Caves are pitch black — place torches! Monsters do not spawn next to torches.</li><li>More monsters come out at night. You are safe in a village, and you heal.</li><li>A yellow <b class="gold">!</b> means a new quest. A yellow <b class="gold">?</b> means a finished quest.</li><li>Merchants buy your materials for gold.</li></ul></div>`;
 function drawPortrait(c, look, zoom, sprFn) {
@@ -5809,11 +5844,19 @@ function hellPlusBigMap(g, C, s, dpr) {
   const V = C.village; if (V) lab((V.x + .5) * s, (V.y + .5) * s, '😇', V.name, '#fff0a0');
   const A = C.arena; if (A && (Game.arenaKnown || C.explored[A.y * C.w + A.x])) lab((A.x + .5) * s, (A.y + .5) * s, Game.satanDefeated ? '✅' : '😈', 'Satan\'s throne', '#ff8a6a');
   for (const hc of C.hcaves || []) if (C.explored[hc.mouth.y * C.w + hc.mouth.x] || (Game.hcaveSeen && Game.hcaveSeen[hc.z])) lab((hc.x + .5) * s, (hc.y + .5) * s, '⛏️', hc.name, '#ffb070');
+  if (C.lostGate && C.cave && C.cave.kind === 'hell') drawLostGateMark(g, (C.lostGate.x + .5) * s, (C.lostGate.y + .5) * s, dpr, true);
   const sm = (C.hnpcs || []).find(n => n.soul); if (sm) { const x = sm.x / 16 * s, y = sm.y / 16 * s; g.fillStyle = '#b07aff'; g.strokeStyle = '#fff'; g.lineWidth = 2 * dpr; g.beginPath(); g.arc(x, y, 5 * dpr, 0, 7); g.fill(); g.stroke(); g.font = `bold ${Math.round(9 * dpr)}px "Pixelify Sans", monospace`; g.lineWidth = 3 * dpr; g.strokeStyle = '#000'; g.strokeText('Soul Merchant', x, y + 16 * dpr); g.fillStyle = '#e0c8ff'; g.fillText('Soul Merchant', x, y + 16 * dpr); }
 }
 function hellPlusMini(g, C, toM, dpr) {
   for (const n of C.hnpcs || []) { const [x, y] = toM(n.x / 16, n.y / 16); if (x < -4 || y < -4 || x > g.canvas.width + 4 || y > g.canvas.height + 4) continue; g.fillStyle = n.soul ? '#b07aff' : '#fff0a0'; g.strokeStyle = '#000'; g.lineWidth = dpr; g.beginPath(); g.arc(x, y, (n.soul ? 3 : 2) * dpr, 0, 7); g.fill(); g.stroke(); }
-  const A = C.arena; if (Game.boss && Game.boss.boss === 'satan') return; if (A && Game.arenaKnown) { let [x, y] = toM(A.x + .5, A.y + .5); x = clamp(x, 5 * dpr, g.canvas.width - 5 * dpr); y = clamp(y, 5 * dpr, g.canvas.height - 5 * dpr); g.fillStyle = Game.satanDefeated ? '#7cff8a' : '#ff3a2a'; g.strokeStyle = '#000'; g.lineWidth = dpr; g.beginPath(); g.moveTo(x, y - 4 * dpr); g.lineTo(x + 4 * dpr, y); g.lineTo(x, y + 4 * dpr); g.lineTo(x - 4 * dpr, y); g.closePath(); g.fill(); g.stroke(); }
+  const A = C.arena; if (!(Game.boss && Game.boss.boss === 'satan') && A && Game.arenaKnown) { let [x, y] = toM(A.x + .5, A.y + .5); x = clamp(x, 5 * dpr, g.canvas.width - 5 * dpr); y = clamp(y, 5 * dpr, g.canvas.height - 5 * dpr); g.fillStyle = Game.satanDefeated ? '#7cff8a' : '#ff3a2a'; g.strokeStyle = '#000'; g.lineWidth = dpr; g.beginPath(); g.moveTo(x, y - 4 * dpr); g.lineTo(x + 4 * dpr, y); g.lineTo(x, y + 4 * dpr); g.lineTo(x - 4 * dpr, y); g.closePath(); g.fill(); g.stroke(); }
+  if (C.lostGate && C.cave && C.cave.kind === 'hell') { let [x, y] = toM(C.lostGate.x + .5, C.lostGate.y + .5); x = clamp(x, 6 * dpr, g.canvas.width - 6 * dpr); y = clamp(y, 6 * dpr, g.canvas.height - 6 * dpr); drawLostGateMark(g, x, y, dpr, false); }
+}
+function drawLostGateMark(g, x, y, dpr, labeled) {
+  g.save(); g.fillStyle = '#7af0ff'; g.strokeStyle = '#140e18'; g.lineWidth = Math.max(1, 2 * dpr); g.beginPath(); g.arc(x, y, 4.5 * dpr, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(x, y, 1.7 * dpr, 0, 7); g.fill();
+  if (labeled) { g.font = `bold ${Math.round(9 * dpr)}px "Pixelify Sans", monospace`; g.textAlign = 'center'; g.lineWidth = 3 * dpr; g.strokeStyle = '#000'; g.strokeText('Soul gate', x, y - 10 * dpr); g.fillStyle = '#bff6ff'; g.fillText('Soul gate', x, y - 10 * dpr); }
+  g.restore();
 }
 
 // ================= MERCHANT MENU (overworld Merchant): header with portrait + wallet, tabs (Buy / Gold Set / Sell), item cards =================
